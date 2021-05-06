@@ -1,2 +1,4 @@
 .vscode/
 neo4j-community-4.2.4/
+amazon_data/
+node_modules/
