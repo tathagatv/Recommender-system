@@ -36,14 +36,12 @@
                 <div class="rating">
                     Rating: <%= product.rating %>
                 </div>
-                <div class="category">
-                    Category: <%= product.category %>
+                <div class="quantity" style="font-size: 1rem;">
+                    Items in stock: <%= product.quantity %>
                 </div>
-                <div class="form">
-                    <form action="/seller/addnew", method="post">
-                      <label for="addnew">Enter New Quantity:</label>
-                      <input type="number" id="addnew" name="addnew" placeholder="<%= product.quantity %>">
-                      <input type="submit" value="Restock!" style="color: #FF8C00">
+                <div class="button">
+                    <form action="/seller/openup" method="post">
+                        <input style="background-color: #FF8C00" id="<%= product.id %>" type="submit" name="openup" value="View details" >
                     </form>
                 </div>
             </div>

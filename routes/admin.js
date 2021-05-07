@@ -6,6 +6,7 @@ const adminCon = require('../controllers/admin');
 const router = express.Router();
 
 
+router.post('/openup',adminCon.post_openup);
 router.post('/insert_seller',adminCon.post_add_seller);
 router.post('/insert_delagent',adminCon.post_add_delagent);
 router.post('/sort',adminCon.post_sort);

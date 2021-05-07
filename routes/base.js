@@ -15,5 +15,6 @@ router.get('/signup',baseCon.get_signup);
 
 router.post('/login',baseCon.post_login);
 router.post('/signup',baseCon.post_signup);
+router.post('/openup',baseCon.post_openup);
 
 module.exports = router;

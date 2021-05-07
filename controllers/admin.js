@@ -9,7 +9,27 @@ class example_base_prod {
         this.seller = "Tathagat";
         this.cost = 150;
         this.rating = 5;
-        this.category = "Randi";
+        this.categories = ["Elec", "CS", "Meta", "Chem"];
+    }
+}
+
+class example_prod_long {
+    constructor(p){
+        this.id = 1;
+        this.name = "BG";
+        this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
+        this.seller = "Tathagat";
+        this.cost = 150;
+        this.status = "Shipped"
+        this.delagent = "ABCD";
+        this.delcontact = "9876543210";
+        this.rating = 5;
+        this.categories = ["Elec", "CS", "Meta", "Chem"];
+        this.quantity = 10;
+        this.brand = "Apple";
+        this.description = "Alienware! Best Gaming Laptop in the Market today! 16 GB GPU, 32GB RAM, liquid display.";
+        this.also_viewed = [p,p,p,p,p,p] // top 6
+        this.also_bought = [p,p,p,p] // top 6
     }
 }
 
@@ -124,4 +144,18 @@ exports.post_add_delagent = (req,res,next) => {
 
 exports.post_sort = (req,res,next) => {
     return
+};
+
+exports.post_openup = (req,res,next) => {
+    // get the product_id;
+    // compute the corresponding "example_prod_long" object by quering using the prod id.
+    p = new example_base_prod();
+    p = new example_prod_long(p);
+    res.render('admin/productdetails', {
+        pageTitle: 'Product Details',
+        path: '/admin/productdetails',
+        editing: false,
+        // prods: result.rows
+        product: p
+    });
 };

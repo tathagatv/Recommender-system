@@ -51,7 +51,7 @@
   'image image image image seller seller seller seller seller'
   'image image image image cost cost cost cost cost'
   'image image image image rating rating rating rating rating'
-  'image image image image category category category category category';
+  'image image image image . . . button button';
   grid-gap: 5px;
   padding: 5px;
   height: auto
@@ -64,14 +64,37 @@
   background-color: #F5F5F5;
 }
 
+.base_product_details {
+  display: grid;
+  grid-template-areas:
+  'name name name name name name name name name'
+  'image image image image seller seller seller seller seller'
+  'image image image image cost cost cost cost cost'
+  'image image image image rating rating rating rating rating'
+  'image image image image category category category category category'
+  'image image image image form form form form form'
+  'customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt'
+  'customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.base_product_details > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
 .seller_onsale {
   display: grid;
   grid-template-areas:
   'name name name name name name name name name'
   'image image image image cost cost cost cost cost'
   'image image image image rating rating rating rating rating'
-  'image image image image category category category category category'
-  'image image image image form form form form form';
+  'image image image image quantity quantity quantity quantity quantity'
+  'image image image image . . . button button';
   grid-gap: 5px;
   padding: 5px;
   height: auto
@@ -79,6 +102,30 @@
   text-align: center;
 }
 .seller_onsale > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.seller_product_details {
+  display: grid;
+  grid-template-areas:
+  'name name name name name name name name name'
+  'image image image image seller seller seller seller seller'
+  'image image image image cost cost cost cost cost'
+  'image image image image rating rating rating rating rating'
+  'image image image image category category category category category'
+  'image image image image quantity quantity quantity quantity quantity'
+  'image image image image form form form form form'
+  'customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt'
+  'customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.seller_product_details > div {
   text-align: center;
   font-size: 0.8rem;
   background-color: #F5F5F5;
@@ -149,7 +196,6 @@
   'image image image image seller seller seller seller seller'
   'image image image image cost cost cost cost cost'
   'image image image image rating rating rating rating rating'
-  'image image image image category category category category category'
   'image image image image . . . button button'
   'image image image image . . . button button';
   grid-gap: 5px;
@@ -279,6 +325,29 @@
   text-align: center;
 }
 .admin_delagents > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.admin_product_details {
+  display: grid;
+  grid-template-areas:
+  'name name name name name name name name name'
+  'image image image image seller seller seller seller seller'
+  'image image image image cost cost cost cost cost'
+  'image image image image rating rating rating rating rating'
+  'image image image image category category category category category'
+  'image image image image quantity quantity quantity quantity quantity'
+  'customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt'
+  'customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.admin_product_details > div {
   text-align: center;
   font-size: 0.8rem;
   background-color: #F5F5F5;

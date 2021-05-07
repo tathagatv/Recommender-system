@@ -9,7 +9,7 @@ class example_base_prod {
         this.seller = "Tathagat";
         this.cost = 150;
         this.rating = 5;
-        this.category = "Randi";
+        this.categories = ["Elec", "CS", "Meta", "Chem"];
     }
 }
 
@@ -24,7 +24,7 @@ class example_prod_long {
         this.delagent = "ABCD";
         this.delcontact = "9876543210";
         this.rating = 5;
-        this.category = "Randi";
+        this.categories = ["Elec", "CS", "Meta", "Chem"];
         this.quantity = 10;
         this.brand = "Apple";
         this.description = "Alienware! Best Gaming Laptop in the Market today! 16 GB GPU, 32GB RAM, liquid display.";

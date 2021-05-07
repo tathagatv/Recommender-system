@@ -2,14 +2,34 @@ const pool= require('../utils/database');
 const Prod = require('../models/prod');
 
 class example_base_prod {
-    constructor(name, image, seller, cost, rating, category){
-        this.name = name;
-        this.image = image;
-        this.seller = seller;
-        this.cost = cost;
-        this.rating = rating;
-        this.category = category;
+    constructor(){
+        this.id = 1;
+        this.name = "BG";
+        this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
+        this.seller = "Tathagat";
+        this.cost = 150;
+        this.rating = 5;
+        this.categories = ["Elec", "CS", "Meta", "Chem"];
+    }
+}
+
+class example_prod_long {
+    constructor(p){
+        this.id = 1;
+        this.name = "BG";
+        this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
+        this.seller = "Tathagat";
+        this.cost = 150;
+        this.status = "Shipped"
+        this.delagent = "ABCD";
+        this.delcontact = "9876543210";
+        this.rating = 5;
+        this.categories = ["Elec", "CS", "Meta", "Chem"];
         this.quantity = 10;
+        this.brand = "Apple";
+        this.description = "Alienware! Best Gaming Laptop in the Market today! 16 GB GPU, 32GB RAM, liquid display.";
+        this.also_viewed = [p,p,p,p,p,p] // top 6
+        this.also_bought = [p,p,p,p] // top 6
     }
 }
 
@@ -105,5 +125,19 @@ exports.post_signup = (req,res,next) => {
         editing: false,
         // prods: result.rows
         prods: arr
+    });
+};
+
+exports.post_openup = (req,res,next) => {
+    // get the product_id;
+    // compute the corresponding "example_prod_long" object by quering using the prod id.
+    p = new example_base_prod();
+    p = new example_prod_long(p);
+    res.render('base/productdetails', {
+        pageTitle: 'Product Details',
+        path: '/base/productdetails',
+        editing: false,
+        // prods: result.rows
+        product: p
     });
 };
