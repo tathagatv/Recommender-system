@@ -1,8 +1,8 @@
 const pool= require('../utils/database');
 const Prod = require('../models/prod');
-
-class example_base_prod {
-    constructor(){
+var prod_id_cnt=1;
+/*class example_base_prod {
+    constructor(name, image, seller, cost, rating, category){
         this.id = 1;
         this.name = "BG";
         this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
@@ -31,8 +31,23 @@ class example_prod_long {
         this.also_viewed = [p,p,p,p,p,p] // top 6
         this.also_bought = [p,p,p,p] // top 6
     }
+}*/
+class base_prod{
+    constructor(id,name, image, cost, rating, quantity, description){
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.cost = cost;
+        this.rating = rating;
+        this.quantity = quantity;
+        this.description = description;
+    }
+}
+function prod(rec){
+    return new base_prod(rec['id'],rec['title'],rec['img'],rec['price'],rec['rating'],rec['quantity'],rec['description']);
 }
 
+/*
 class example_past_order {
     constructor(){
         this.orderid = 1;
@@ -41,6 +56,17 @@ class example_past_order {
         this.costlist = [44000, 1400, 8930, 23, 65]
         this.totalcost = 88654;
         this.buyer = "Taliban";
+    }
+}*/
+
+class past_order {
+    constructor(oid,pl,ql,cl,tc,buyer){
+        this.orderid = oid;
+        this.productlist = pl;
+        this.quantitylist = ql;
+        this.costlist = cl;
+        this.totalcost = tc;
+        this.buyer = buyer;
     }
 }
 
@@ -54,15 +80,20 @@ class example_admin_seller {
 }
 
 exports.get_onsale = (req,res,next) => {
-    p = new example_prod_long();
-    arr = [p,p,p,p];
-    res.render('seller/onsale', {
-        pageTitle: 'On Sale',
-        path: '/seller/onsale',
-        editing: false,
-        // prods: result.rows
-        prods: arr
-    });
+    db_session
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) return p",{id: 1})
+        .then(function(result){
+            arr=[];
+            for (i=0;i<result.records.length;i++){
+                arr.push(prod(result.records[i].get('p').properties));
+            }
+            res.render('seller/onsale', {
+                pageTitle: 'On Sale',
+                path: '/seller/onsale',
+                editing: false,
+                prods: arr
+            });
+        });
 };
 
 exports.get_about = (req,res,next) => {
@@ -88,39 +119,144 @@ exports.get_addnew = (req,res,next) => {
 };
 
 exports.get_past = (req,res,next) => {
-    o = new example_past_order()
-    arr = [o,o,o,o,o,o]
-    res.render('seller/past', {
-        pageTitle: 'Past Orders',
-        path: '/seller/past',
-        editing: false,
-        // prods: result.rows
-        orders: arr
-    });
+    db_session
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)-[:order_product]->(o:order{status:\"delivered\"})\
+              match (b:buyer)-[:buyer_order]->(o) return o.id,b.name,p,o.quantity order by o.id",{id: 1})
+        .then(function(result){
+            arr=[];
+            pl=[];
+            ql=[];
+            cl=[];
+            tc=0;
+            var loid=-1;
+            for (i=0;i<result.records.length;i++){
+                oid=result.records[i].get('o.id');
+                prop=result.records[i].get('p').properties;
+                qty=result.records[i].get('o.quantity');
+                buyer=result.records[i].get('b.name');
+                if(oid===loid){
+                    pl.push(prop['title']);
+                    ql.push(qty);
+                    cl.push(prop['price']);
+                    tc+=(prop['price']*qty);
+                }else{
+                    if(i===0){
+                        //do nothing
+                    }else{
+                        arr.push(new past_order(oid,pl,ql,cl,tc,buyer));
+                    }
+                    pl=[prop['title']];
+                    ql=[qty];
+                    cl=[prop['price']];
+                    tc=prop['price']*qty;
+                }
+                loid=oid;
+            }
+            if(result.records.length>0){
+                arr.push(new past_order(oid,pl,ql,cl,tc,buyer));
+            }
+            res.render('seller/past', {
+                pageTitle: 'Past Orders',
+                path: '/seller/past',
+                editing: false,
+                // prods: result.rows
+                orders: arr
+            });
+        });
 };
 
 exports.get_requests = (req,res,next) => {
-    o = new example_past_order()
-    arr = [o,o,o,o,o,o]
-    res.render('seller/requests', {
-        pageTitle: 'Order Requests',
-        path: '/seller/requests',
-        editing: false,
-        // prods: result.rows
-        orders: arr
-    });
+    db_session
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)-[:order_product]->(o:order{status:\"requested\"})\
+              match (b:buyer)-[:buyer_order]->(o) return o.id,b.name,p,o.quantity order by o.id",{id: 1})
+        .then(function(result){
+            arr=[];
+            pl=[];
+            ql=[];
+            cl=[];
+            tc=0;
+            var loid=-1;
+            for (i=0;i<result.records.length;i++){
+                oid=result.records[i].get('o.id');
+                prop=result.records[i].get('p').properties;
+                qty=result.records[i].get('o.quantity');
+                buyer=result.records[i].get('b.name');
+                if(oid===loid){
+                    pl.push(prop['title']);
+                    ql.push(qty);
+                    cl.push(prop['price']);
+                    tc+=(prop['price']*qty);
+                }else{
+                    if(i===0){
+                        //do nothing
+                    }else{
+                        arr.push(new past_order(oid,pl,ql,cl,tc,buyer));
+                    }
+                    pl=[prop['title']];
+                    ql=[qty];
+                    cl=[prop['price']];
+                    tc=prop['price']*qty;
+                }
+                loid=oid;
+            }
+            if(result.records.length>0){
+                arr.push(new past_order(oid,pl,ql,cl,tc,buyer));
+            }
+            res.render('seller/requests', {
+                pageTitle: 'Order Requests',
+                path: '/seller/requests',
+                editing: false,
+                // prods: result.rows
+                orders: arr
+            });
+        });
 };
 
 exports.get_ongoing = (req,res,next) => {
-    o = new example_past_order()
-    arr = [o,o,o,o,o,o]
-    res.render('seller/ongoing', {
-        pageTitle: 'Ongoing Orders',
-        path: '/seller/ongoing',
-        editing: false,
-        // prods: result.rows
-        orders: arr
-    });
+    db_session
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)-[:order_product]->(o:order{status:\"shipped\"})\
+              match (b:buyer)-[:buyer_order]->(o) return o.id,b.name,p,o.quantity order by o.id",{id: 1})
+        .then(function(result){
+            arr=[];
+            pl=[];
+            ql=[];
+            cl=[];
+            tc=0;
+            var loid=-1;
+            for (i=0;i<result.records.length;i++){
+                oid=result.records[i].get('o.id');
+                prop=result.records[i].get('p').properties;
+                qty=result.records[i].get('o.quantity');
+                buyer=result.records[i].get('b.name');
+                if(oid===loid){
+                    pl.push(prop['title']);
+                    ql.push(qty);
+                    cl.push(prop['price']);
+                    tc+=(prop['price']*qty);
+                }else{
+                    if(i===0){
+                        //do nothing
+                    }else{
+                        arr.push(new past_order(oid,pl,ql,cl,tc,buyer));
+                    }
+                    pl=[prop['title']];
+                    ql=[qty];
+                    cl=[prop['price']];
+                    tc=prop['price']*qty;
+                }
+                loid=oid;
+            }
+            if(result.records.length>0){
+                arr.push(new past_order(oid,pl,ql,cl,tc,buyer));
+            }
+            res.render('seller/ongoing', {
+                pageTitle: 'Ongoing Orders',
+                path: '/seller/ongoing',
+                editing: false,
+                // prods: result.rows
+                orders: arr
+            });
+        });
 };
 
 exports.post_sort = (req,res,next) => {
@@ -128,10 +264,17 @@ exports.post_sort = (req,res,next) => {
 };
 
 exports.post_addnew = (req,res,next) => {
-    return;
+    var oid = req.body.ship;
+    db_session
+        .run("match (p:product)-[:prod_sell]->(s:seller{id:$id}) match (p)-[:order_product]->(o:order{id:$o_id,status:\"requested\"}) set o.status=\"shipped\" \
+              with o match (d:del_personnel) with d,min(d.active) as m1 create (d)-[:del_order]->(o) set d.active=d.active+1",{id:1,o_id:oid})
+        .then(function(result){
+            res.redirect('/seller/ongoing');
+        });
 };
 
 exports.post_ship = (req,res,next) => {
+
     return;
 };
 
