@@ -1,0 +1,33 @@
+<div class="backdrop"></div>
+<header class="main-header">
+    <button id="side-menu-toggle">Menu</button>
+    <div class="main-header__nav">
+        <ul class="main-header__item-list">
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/browse' ? 'active' : '' %>" href="/admin/browse">Browse</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/sellers' ? 'active' : '' %>" href="/admin/sellers">Sellers</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/buyers' ? 'active' : '' %>" href="/admin/buyers">Buyers</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/delagents' ? 'active' : '' %>" href="/admin/delagents">Delivery Agents</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/about' ? 'active' : '' %>" href="/admin/about">About</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/add_delagent' ? 'active' : '' %>" href="/admin/add_delagent">Add Delivery Agent</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/add_seller' ? 'active' : '' %>" href="/admin/add_seller">Add Sellers</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/admin/Analytics' ? 'active' : '' %>" href="/admin/Analytics">Analytics</a>
+            </li>
+
+        </ul>
+    </div>
+</header>

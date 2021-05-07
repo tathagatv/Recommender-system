@@ -1,0 +1,38 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/order.css">
+<link rel="stylesheet" href="/css/grid_containers.css">
+</head>
+
+<body>
+<%- include('../includes/delagentnav.ejs') %>
+
+<main>
+    <form action="/delagent/sort">
+      <label for="search">Search:</label>
+      <input type="text" id="search" name="search" placeholder="Search our products">
+      <input type="submit" value="Submit"><br><br>
+    </form>
+
+    <h1>Ongoing Orders</h1>
+
+
+    <div class="penta-grid-container">
+    <% for (var i = 0; i < orders.length; i++) { %>
+    <% order = orders[i]; %>
+        <div class="grid-item">
+            <div class="delagent_delivered">
+                <div class="id" style="background-color: #fFf1e1; font-size: 1rem;">
+                    <h1>
+                        Order ID <%= order.orderid %>
+                    </h1>
+                </div> <br>
+                <div class="cost" style="font-size: 1rem;">
+                    Cost: ₹ <%= order.cost %> /-
+                </div>
+            </div>
+        </div>
+    <% } %>
+    </div>
+</main>
+<%- include('../includes/end.ejs') %>

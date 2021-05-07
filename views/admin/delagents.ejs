@@ -1,0 +1,47 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/order.css">
+<link rel="stylesheet" href="/css/grid_containers.css">
+</head>
+
+<body>
+<%- include('../includes/adminnav.ejs') %>
+
+<main>
+    <form action="/admin/sort">
+      <label for="search">Search:</label>
+      <input type="text" id="search" name="search" placeholder="Search our products">
+      <input type="submit" value="Submit"><br><br>
+    </form>
+
+    <h1>Past Orders</h1>
+
+
+    <div class="penta-grid-container">
+    <% for (var i = 0; i < delagents.length; i++) { %>
+    <% delagent = delagents[i]; %>
+        <div class="grid-item">
+            <div class="admin_delagents">
+                <div class="name" style="background-color: #fFf1e1; font-size: 1rem;">
+                    <h1>
+                        Name: <%= delagent.name %>
+                    </h1>
+                </div>
+                <div class="contact" style="font-size: 1rem;">
+                    Contact: <%= delagent.contact %>
+                </div>
+                <div class="mail" style="font-size: 1rem;">
+                    Mail Address: <%= delagent.mail %>
+                </div>
+                <div class="orders_delivered" style="font-size: 1rem;">
+                    Number of Orders delivered: <%= delagent.num_delivered %>
+                </div>
+                <div class="orders_active" style="font-size: 1rem;">
+                    Number of Orders active: <%= delagent.num_active %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    </div>
+</main>
+<%- include('../includes/end.ejs') %>

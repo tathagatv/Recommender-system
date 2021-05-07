@@ -1,0 +1,50 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/product.css">
+<link rel="stylesheet" href="/css/grid_containers.css">
+</head>
+
+<body>
+<%- include('../includes/adminnav.ejs') %>
+
+<main>
+    <form action="/admin/sort">
+      <label for="search">Search:</label>
+      <input type="text" id="search" name="search" placeholder="Search our products">
+      <input type="submit" value="Submit"><br><br>
+    </form>
+
+    <h1>Product Catalogue</h1>
+
+
+    <div class="tri-grid-container">
+    <% for (var i = 0; i < prods.length; i++) { %>
+    <% product = prods[i]; %>
+        <div class="grid-item">
+            <div class="base_product">
+                <div class="name" style="background-color: #fFf1e1;">
+                    <h1>
+                        <%= product.name %>
+                    </h1>
+                </div>
+                <div class="image" style="background-color: #FFFFFF">
+                    <img src="<%= product.image %>" height=140px width=140px  altt="<%= product.name%>">
+                </div>
+                <div class="seller">
+                    Sold By <%= product.seller %>
+                </div>
+                <div class="cost">
+                    Cost: ₹ <%= product.cost %> /-
+                </div>
+                <div class="rating">
+                    Rating: <%= product.rating %>
+                </div>
+                <div class="category">
+                    Category: <%= product.category %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    </div>
+</main>
+<%- include('../includes/end.ejs') %>

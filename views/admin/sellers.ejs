@@ -1,0 +1,44 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/order.css">
+<link rel="stylesheet" href="/css/grid_containers.css">
+</head>
+
+<body>
+<%- include('../includes/adminnav.ejs') %>
+
+<main>
+    <form action="/admin/sort">
+      <label for="search">Search:</label>
+      <input type="text" id="search" name="search" placeholder="Search our products">
+      <input type="submit" value="Submit"><br><br>
+    </form>
+
+    <h1>Past Orders</h1>
+
+
+    <div class="penta-grid-container">
+    <% for (var i = 0; i < sellers.length; i++) { %>
+    <% seller = sellers[i]; %>
+        <div class="grid-item">
+            <div class="admin_seller">
+                <div class="name" style="background-color: #fFf1e1; font-size: 1rem;">
+                    <h1>
+                        Name: <%= seller.name %>
+                    </h1>
+                </div>
+                <div class="address" style="font-size: 1rem;">
+                    Address: <%= seller.address %>
+                </div>
+                <div class="contact" style="font-size: 1rem;">
+                    Contact: <%= seller.contact %>
+                </div>
+                <div class="mail" style="font-size: 1rem;">
+                    Mail Address: <%= seller.mail %>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    </div>
+</main>
+<%- include('../includes/end.ejs') %>

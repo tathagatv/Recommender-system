@@ -17,6 +17,9 @@
 .readnum { grid-area: readnum; }
 .button { grid-area: button; }
 .form { grid-area: form; }
+.orders_delivered { grid-area: orders_delivered; }
+.orders_active { grid-area: orders_active; }
+.balance { grid-area: balance; }
 .status { grid-area: status; }
 
 .tri-grid-container {
@@ -240,6 +243,83 @@
   text-align: center;
 }
 .buyer_product_details > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.admin_buyer {
+  display: grid;
+  grid-template-areas:
+  'name name name name name'
+  'address address address address address'
+  'contact contact contact contact contact'
+  'mail mail mail mail mail'
+  'balance balance balance balance balance';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.admin_buyer > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.admin_delagents {
+  display: grid;
+  grid-template-areas:
+  'name name name name name'
+  'contact contact contact contact contact'
+  'mail mail mail mail mail'
+  'orders_delivered orders_delivered orders_delivered orders_delivered orders_delivered'
+  'orders_active orders_active orders_active orders_active orders_active';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.admin_delagents > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.delagent_ongoing {
+  display: grid;
+  grid-template-areas:
+  'id id id id id'
+  'cost cost cost cost cost'
+  'address address address address address'
+  'contact contact contact contact contact'
+  '. . . button button';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.delagent_ongoing > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.delagent_delivered {
+  display: grid;
+  grid-template-areas:
+  'id id id id id'
+  'cost cost cost cost cost';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.delagent_delivered > div {
   text-align: center;
   font-size: 0.8rem;
   background-color: #F5F5F5;

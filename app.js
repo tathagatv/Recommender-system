@@ -9,6 +9,7 @@ const adminRo = require('./routes/admin');
 const baseRo = require('./routes/base');
 const sellerRo = require('./routes/seller');
 const buyerRo = require('./routes/buyer');
+const delagentRo = require('./routes/delagent');
 
 // View engine
 app.set('views', path.join(__dirname, 'views'));
@@ -23,6 +24,7 @@ app.use('/admin',adminRo);
 app.use('/',baseRo);
 app.use('/seller',sellerRo);
 app.use('/buyer',buyerRo);
+app.use('/delagent',delagentRo);
 
 // app.get('/', function(req, res){
 //     session

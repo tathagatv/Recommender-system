@@ -1,0 +1,33 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+<%- include('../includes/adminnav.ejs') %>
+
+<main>
+    <h2>Register a new Delivery Agent</h2>
+    <form action="/admin/insert_delagent" method="post">
+      <div class="container" style="border-style: double;">
+        <label for="name"><b>Name</b></label>
+        <input type="text" placeholder="Enter Name" name="name" required value="<% if (editing) { %><%= user.name %><% } %>">
+
+        <label for="uname"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" name="uname" required value="<% if (editing) { %><%= user.username %><% } %>">
+
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="psw" required value="<% if (editing) { %><%= user.password %><% } %>">
+
+        <label for="contact"><b>Contact Number</b></label>
+        <input type="number" placeholder="Enter 10 digit contact number" size="10" name="contact" required value="<% if (editing) { %><%= user.contact %><% } %>">
+
+        <label for="E-Mail ID"><b>Mail ID</b></label>
+        <input type="mail" placeholder="Enter email id" name="mail" maxlength="50" required value="<% if (editing) { %><%= user.mail %><% } %>">
+        
+        <button type="submit" style="text-align: center;">Sign Up</button>
+
+      </div>
+    </form>
+</main>
+<%- include('../includes/end.ejs') %>

@@ -1,0 +1,17 @@
+<div class="backdrop"></div>
+<header class="main-header">
+    <button id="side-menu-toggle">Menu</button>
+    <div class="main-header__nav">
+        <ul class="main-header__item-list">
+            <li class="main-header__item">
+                <a class="<%= path === '/delagent/ongoing' ? 'active' : '' %>" href="/delagent/ongoing">Ongoing Orders</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/delagent/delivered' ? 'active' : '' %>" href="/delagent/delivered">Delivered Orders</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/delagent/about' ? 'active' : '' %>" href="/delagent/about">About</a>
+            </li>
+        </ul>
+    </div>
+</header>
