@@ -13,4 +13,4 @@ MATCH (p:product), (s:seller) CREATE (p)-[:prod_sell]->(s);
 // initialize product ratings randomly
 match (p:product) set p.rating=rand()*5, p.numRating=tointeger(rand()*100);
 // initialize buyer data
-match (b:buyer) set b.money=0;
+match (b:buyer) set b.money=0, b.username=apoc.text.random(10), b.password=apoc.text.random(10);

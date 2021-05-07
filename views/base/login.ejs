@@ -17,13 +17,13 @@
         <input type="password" placeholder="Enter Password" name="psw" required value="<% if (editing) { %><%= product.username %><% } %>">
         
         <label for="mode"><b>Sign In Mode</b></label><br>
-        <input type="radio" name="mode" id="admin" value="admin">
+        <input type="radio" name="mode" id="admin" value="admin" required>
         <label for="admin">Admin</label><br>
         <input type="radio" name="mode" id="seller" value="seller">
         <label for="seller">Seller</label><br>
         <input type="radio" name="mode" id="buyer" value="buyer">
         <label for="buyer">Buyer</label><br>
-        <input type="radio" name="mode" id="delag" value="delag">
+        <input type="radio" name="mode" id="delag" value="del_personnel">
         <label for="delag">Delivery Agent</label><br>
             
         <button type="submit" style="text-align: center;">Login</button>
