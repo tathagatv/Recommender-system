@@ -1,0 +1,22 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+<%- include('../includes/buyernav.ejs') %>
+
+<main>
+    <h2>Recharge your account!</h2>
+    <h3>Current Balance = <%= user.balance %></h3>
+    <form action="/buyer/recharge" method="post">
+      <div class="container" style="border-style: double;">
+        <h4>Secure Payment Portal</h4>
+        <label for="amount"><b>Recharge Amount</b></label>
+        <input type="number" placeholder="Amount" min="0" name="amount" required>
+
+        <button type="submit" style="text-align: center;">Recharge</button>
+      </div>
+    </form>
+</main>
+<%- include('../includes/end.ejs') %>

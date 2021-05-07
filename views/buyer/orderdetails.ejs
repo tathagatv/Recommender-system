@@ -1,0 +1,58 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/order.css">
+<link rel="stylesheet" href="/css/grid_containers.css">
+</head>
+
+<body>
+<%- include('../includes/buyernav.ejs') %>
+
+<main>
+    <div class="grid-item">
+        <div class="buyer_order_details">
+            <div class="id" style="background-color: #fFf1e1; font-size: 1rem;">
+                <h1>
+                    Order ID <%= order.orderid %>
+                </h1>
+            </div>
+            <div class="cost" style="font-size: 1rem;">
+                Total Cost: ₹ <%= order.totalcost %> /-
+            </div>
+            <div class="status" style="font-size: 1rem;">
+                Status: <%= order.status %>
+            </div>
+            <div class="seller" style="font-size: 1rem;">
+                Sold by <%= order.seller %>
+            </div>
+            <div class="itemlist">
+                <table style="width:100%">
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th> 
+                        <th>Cost per Item</th>
+                        <th>Rating Given</th>
+                    </tr>
+                <% for (var j = 0; j < order.product_id_list.length; j++) { %>
+                <% prod_id = order.product_id_list[j]; %>
+                <% prod_name = order.product_name_list[j]; %>
+                <% quant = order.product_quantity_list[j]; %>
+                <% cost = order.product_cost_list[j]; %>
+                <% rating = order.product_rating_list[j]; %>
+                <tr>
+                    <td><%= prod_name %></td>
+                    <td><%= quant %></td>
+                    <td><%= cost %></td>
+                    <td>
+                        <form action="/buyer/rating", method="post">
+                          <label for="rating">Enter New Quantity:</label>
+                          <input type="number" id="rating" min="0" max="5" name="rating" placeholder="<%= rating %>">
+                          <input type="submit" value="Rate!" style="color: #FF8C00">
+                        </form>
+                    </td>
+                </tr>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</main>
+<%- include('../includes/end.ejs') %>

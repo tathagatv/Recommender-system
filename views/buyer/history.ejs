@@ -5,42 +5,44 @@
 </head>
 
 <body>
-<%- include('../includes/sellernav.ejs') %>
+<%- include('../includes/buyernav.ejs') %>
 
 <main>
-    <form action="/seller/sort">
+    <form action="/buyer/sort">
       <label for="search">Search:</label>
       <input type="text" id="search" name="search" placeholder="Search our products">
       <input type="submit" value="Submit"><br><br>
     </form>
 
-    <h1>Past Orders</h1>
+    <h1>Order History</h1>
 
 
     <div class="penta-grid-container">
     <% for (var i = 0; i < orders.length; i++) { %>
     <% order = orders[i]; %>
         <div class="grid-item">
-            <div class="seller_past_orders">
+            <div class="buyer_history">
                 <div class="id" style="background-color: #fFf1e1; font-size: 1rem;">
                     <h1>
                         Order ID <%= order.orderid %>
                     </h1>
-                </div> <br>
-                <div class="buyer" style="font-size: 1rem;">
-                    Buyer: <%= order.buyer %>
-                </div> <br>
-                <div class="itemlist">
-                    Items in the order: <br>
-                        <% for (var j = 0; j < order.productlist.length; j++) { %>
-                        <% prod = order.productlist[j]; %>
-                        <% quant = order.quantitylist[j]; %>
-                        <% cost = order.costlist[j]; %>
-                        <%= quant %>x <%= prod %> → ₹ <%= cost %> each <br>
-                        <% } %>
-                </div> <br>
+                </div>
                 <div class="cost" style="font-size: 1rem;">
                     Cost: ₹ <%= order.totalcost %> /-
+                </div>
+                <div class="status" style="font-size: 1rem;">
+                    Order status: <%= order.status %>
+                </div>
+                <div class="agentname" style="font-size: 1rem;">
+                    Delivery Agent: <%= order.delagent %>
+                </div>
+                <div class="agentnumber" style="font-size: 1rem;">
+                    Agent Contact: <%= order.delcontact %>
+                </div>
+                <div class="button">
+                    <form action="/buyer/orderdetails" method="post">
+                        <input style="background-color: #FF8C00" id="<%= order.id %>" type="submit" name="openup" value="View details" >
+                    </form>
                 </div>
             </div>
         </div>

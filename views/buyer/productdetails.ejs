@@ -1,0 +1,125 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/order.css">
+<link rel="stylesheet" href="/css/grid_containers.css">
+</head>
+
+<body>
+<%- include('../includes/buyernav.ejs') %>
+
+<main>
+    <div class="grid-item">
+        <div class="buyer_product_details">
+            <div class="name" style="background-color: #fFf1e1; font-size: 1rem;">
+                <h1>
+                    <%= product.name %>
+                </h1>
+            </div>
+            <div class="image" style="background-color: #FFFFFF">
+                    <img src="<%= product.image %>" height=140px width=140px  altt="<%= product.name%>">
+                </div>
+            <div class="seller" style="font-size: 1rem;">
+                Sold by <%= product.seller %>
+            </div>
+            <div class="cost" style="font-size: 1rem;">
+                Cost: ₹ <%= product.cost %> /-
+            </div>
+            <div class="rating" style="font-size: 1rem;">
+                Rating: <%= product.rating %>
+            </div>
+            <div class="category" style="font-size: 1rem;">
+                Rating: <%= product.category %>
+            </div>
+            <div class="form">
+                    <form action="/buyer/addtocart", method="post">
+                      <label for="addtocart">Quantity:</label>
+                      <input type="number" id="addtocart" name="addtocart" min="1" max="<%= product.quantity %>" placeholder="1-<%= product.quantity %>">
+                      <input type="submit" value="Add to Cart!" style="color: #FF8C00">
+                    </form>
+                </div>
+            <div class="customtxt">
+                Rating: <br>
+                <textarea readonly rows="6" cols="130">
+                     <%= product.description %>
+                </textarea>
+            </div>
+        </div>
+    </div>
+
+    <h1>Also Viewed</h1>
+
+    <div class="tri-grid-container">
+    <% for (var i = 0; i < product.also_viewed.length; i++) { %>
+    <% pp = product.also_viewed[i]; %>
+        <div class="grid-item">
+            <div class="buyer_browse">
+                <div class="name" style="background-color: #fFf1e1;">
+                    <h1>
+                        <%= pp.name %>
+                    </h1>
+                </div>
+                <div class="image" style="background-color: #FFFFFF">
+                    <img src="<%= pp.image %>" height=140px width=140px  altt="<%= pp.name%>">
+                </div>
+                <div class="seller">
+                    Sold By <%= pp.seller %>
+                </div>
+                <div class="cost">
+                    Cost: ₹ <%= pp.cost %> /-
+                </div>
+                <div class="rating">
+                    Rating: <%= pp.rating %>
+                </div>
+                <div class="category">
+                    Category: <%= pp.category %>
+                </div>
+                <div class="button">
+                    <form action="/buyer/openup" method="post">
+                        <input style="background-color: #FF8C00" id="<%= pp.id %>" type="submit" name="openup" value="View details" >
+                    </form>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    </div>
+
+
+    <h1>Also Bought</h1>
+    <div class="tri-grid-container">
+    <% for (var i = 0; i < product.also_bought.length; i++) { %>
+    <% pp = product.also_bought[i]; %>
+        <div class="grid-item">
+            <div class="buyer_browse">
+                <div class="name" style="background-color: #fFf1e1;">
+                    <h1>
+                        <%= pp.name %>
+                    </h1>
+                </div>
+                <div class="image" style="background-color: #FFFFFF">
+                    <img src="<%= pp.image %>" height=140px width=140px  altt="<%= pp.name%>">
+                </div>
+                <div class="seller">
+                    Sold By <%= pp.seller %>
+                </div>
+                <div class="cost">
+                    Cost: ₹ <%= pp.cost %> /-
+                </div>
+                <div class="rating">
+                    Rating: <%= pp.rating %>
+                </div>
+                <div class="category">
+                    Category: <%= pp.category %>
+                </div>
+                <div class="button">
+                    <form action="/buyer/openup" method="post">
+                        <input style="background-color: #FF8C00" id="<%= pp.id %>" type="submit" name="openup" value="View details" >
+                    </form>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    </div>
+
+
+</main>
+<%- include('../includes/end.ejs') %>

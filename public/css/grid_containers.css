@@ -1,9 +1,12 @@
 .image { grid-area: image; }
 .seller { grid-area: seller; }
 .buyer { grid-area: buyer; }
+.agentname { grid-area: agentname; }
+.agentnumber { grid-area: agentnumber; }
 .name { grid-area: name; }
 .cost { grid-area: cost; }
 .rating { grid-area: rating; }
+.quantity { grid-area: quantity; }
 .category { grid-area: category; }
 .address { grid-area: address; }
 .contact { grid-area: contact; }
@@ -14,6 +17,7 @@
 .readnum { grid-area: readnum; }
 .button { grid-area: button; }
 .form { grid-area: form; }
+.status { grid-area: status; }
 
 .tri-grid-container {
   display: grid;
@@ -82,8 +86,8 @@
   grid-template-areas:
   'id id id id id'
   'buyer buyer buyer buyer buyer'
-  'itemlist itemlist itemlist itemlist itemlist'
-  'cost cost cost cost cost';
+  'cost cost cost cost cost'
+  'itemlist itemlist itemlist itemlist itemlist';
   grid-gap: 5px;
   padding: 5px;
   height: 300px
@@ -130,6 +134,112 @@
   text-align: center;
 }
 .seller_ongoing > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.buyer_browse {
+  display: grid;
+  grid-template-areas:
+  'name name name name name name name name name'
+  'image image image image seller seller seller seller seller'
+  'image image image image cost cost cost cost cost'
+  'image image image image rating rating rating rating rating'
+  'image image image image category category category category category'
+  'image image image image . . . button button'
+  'image image image image . . . button button';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.buyer_browse > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.buyer_history {
+  display: grid;
+  grid-template-areas:
+  'id id id id id'
+  'cost cost cost cost cost'
+  'status status status status status'
+  'agentname agentname agentname agentname agentname'
+  'agentnumber agentnumber agentnumber agentnumber agentnumber'
+  '. . .  button button';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.buyer_history > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.buyer_cart {
+  display: grid;
+  grid-template-areas:
+  'name name name name name name name name name'
+  'image image image image seller seller seller seller seller'
+  'image image image image cost cost cost cost cost'
+  'image image image image quantity quantity quantity quantity quantity'
+  'image image image image . . . button button';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.buyer_cart > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.buyer_order_details {
+  display: grid;
+  grid-template-areas:
+  'id id id id id'
+  'cost cost cost cost cost'
+  'seller seller seller seller seller'
+  'status status status status status'
+  'itemlist itemlist itemlist itemlist itemlist';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.buyer_order_details > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.buyer_product_details {
+  display: grid;
+  grid-template-areas:
+  'name name name name name name name name name'
+  'image image image image seller seller seller seller seller'
+  'image image image image cost cost cost cost cost'
+  'image image image image rating rating rating rating rating'
+  'image image image image category category category category category'
+  'image image image image form form form form form'
+  'customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt'
+  'customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt customtxt';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.buyer_product_details > div {
   text-align: center;
   font-size: 0.8rem;
   background-color: #F5F5F5;
