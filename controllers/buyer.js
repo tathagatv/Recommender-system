@@ -1,6 +1,8 @@
 const pool= require('../utils/database');
 const Prod = require('../models/prod');
 
+var order_id = 1;
+
 class example_base_prod {
     constructor(id, name, image, seller, cost, rating){
         this.id = id;
@@ -181,7 +183,33 @@ exports.post_recharge = (req,res,next) => {
 };
 
 exports.post_placeorder = (req,res,next) => {
-    return;
+    db_session
+        .run("MATCH (p:product)-[c:cart]->(b:buyer{id:$bid})\
+        create (o:order{timestamp:timestamp(), o_id:$oid, status:\"requested\", quantity:c.quantity}),\
+        (b)-[:buyer_order]->(o)-[:order_product]->(p)\
+        DELETE c with b, o\
+        MATCH (b)-[:buyer_order]->(o2:order)\
+        WHERE o.timestamp-o2.timestamp< 36000000 and o.timestamp-o2.timestamp > 1000\
+        MATCH (o2)-[:order_product]->(p2:product)\
+        MERGE (p)-[:also_bought]->(p2);", {bid: req.session.uid, oid:order_id})
+        .then(() => {
+            arr = [];
+            db_session
+                .run("MATCH (:buyer{id:$id})-[:buyer_order]->(o:order)-[:order_product]->(p:product) return o.o_id, sum(o.quantity*p.price) as cost", {id: req.session.uid})
+                .then(function(result){
+                    result.records.forEach(element => {
+                        o_id = element.get('o.o_id');
+                        cost = element.get('cost');
+                        arr.push(new example_order_short(o_id, cost.toFixed(2)));
+                    });
+                    res.render('buyer/history', {
+                        pageTitle: 'Past Orders',
+                        path: '/buyer/history',
+                        editing: false,
+                        orders: arr
+                    });
+                });
+        });
 };
 
 exports.post_openup = (req,res,next) => {
@@ -227,16 +255,15 @@ exports.post_openup = (req,res,next) => {
                     .then(function(result){
                         cat = [];
                         result.records.forEach(element => {
-                            cat.push(element.get['c.name']);
+                            cat.push(element.get('c.name'));
                         });
-                        product.category = cat;
+                        product.categories = cat;
                     }).then(() => {db_session
                         .run("MATCH (p:product{id:$pid})-[:prod_brand]->(b:brand) return b.name", {pid: pid})
                         .then(function(result){
                             if(result.records.length > 0){
                                 product.brand = result.records[0];
                             }
-                            console.log(product);
                             res.render('buyer/productdetails', {
                                 pageTitle: 'Product Details',
                                 path: '/buyer/productdetails',
@@ -279,9 +306,53 @@ exports.post_orderdetails = (req,res,next) => {
 };
 
 exports.post_removefromcart = (req,res,next) => {
-    return;
+    db_session
+        .run("MATCH (p:product{id:$pid}), (b:buyer{id:$bid}) match (p)-[c:cart]->(b)\
+        set p.quantity=p.quantity+c.quantity delete c;",
+        {bid: req.session.uid, pid: req.body.pid})
+        .then(() => {
+            arr = [];
+            db_session
+                .run("match (p:product)-[c:cart]->(b:buyer{id:$id}), (p)-[:prod_sell]->(s:seller) return p, s.name, c.quantity", {id: req.session.uid})
+                .then(function(result){
+                    result.records.forEach(element => {
+                        properties = element.get('p').properties;
+                        seller = element.get('s.name');
+                        qty = element.get('c.quantity');
+                        arr.push(new example_cart_item(properties['id'], properties['title'], properties['img'], seller, properties['price'], properties['rating'].toFixed(2), qty));
+                    });
+                    res.render('buyer/cart', {
+                        pageTitle: 'Cart',
+                        path: '/buyer/cart',
+                        editing: false,
+                        cart: new example_cart(req.session.uid, arr)
+                    });
+                });
+        });
 };
 
 exports.post_addtocart = (req,res,next) => {
-    return;
+    db_session
+        .run("MATCH (p:product{id:$pid}), (b:buyer{id:$bid}) MERGE (p)-[c:cart]->(b)\
+        ON CREATE SET c.quantity=$qty ON MATCH SET c.quantity=c.quantity + $qty set p.quantity=p.quantity-$qty;",
+        {bid: req.session.uid, qty: parseInt(req.body.addtocart), pid: req.body.pid})
+        .then(() => {
+            arr = [];
+            db_session
+                .run("match (p:product)-[c:cart]->(b:buyer{id:$id}), (p)-[:prod_sell]->(s:seller) return p, s.name, c.quantity", {id: req.session.uid})
+                .then(function(result){
+                    result.records.forEach(element => {
+                        properties = element.get('p').properties;
+                        seller = element.get('s.name');
+                        qty = element.get('c.quantity');
+                        arr.push(new example_cart_item(properties['id'], properties['title'], properties['img'], seller, properties['price'], properties['rating'].toFixed(2), qty));
+                    });
+                    res.render('buyer/cart', {
+                        pageTitle: 'Cart',
+                        path: '/buyer/cart',
+                        editing: false,
+                        cart: new example_cart(req.session.uid, arr)
+                    });
+                });
+        });
 };
