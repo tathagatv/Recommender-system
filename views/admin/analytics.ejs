@@ -1,0 +1,100 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+<%- include('../includes/adminnav.ejs') %>
+
+<main>
+    <h1>Number of products sold per category:</h1>
+    <div id="piechart"></div>
+    <hr>
+    <h1>Increase in the usage of AAmazon by our users over the years:</h1>
+    <div id="linechart_material"></div>
+
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+    // Load google charts
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawPieChart);
+
+    // Draw the chart and set the chart values
+    function drawPieChart() {
+        
+      var data = google.visualization.arrayToDataTable(<%- JSON.stringify(list_of_tuples) %>);
+
+      // Optional; add a title and set the width and height of the chart
+      var options = {'title':'Top Trending 10 Product Categories ', 'width':550, 'height':400};
+
+      // Display the chart inside the <div> element with id="piechart"
+      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+      chart.draw(data, options);
+    }
+    </script>
+
+
+
+
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'Year');
+      data.addColumn('number', 'Number of Orders');
+
+      data.addRows(<%- JSON.stringify(orders_per_year) %>);
+
+      var options = {
+        chart: {
+          title: 'The increasing trend of the orders placed using AAmazon',
+          subtitle: 'In hundreds',
+        },
+        width: 900,
+        height: 500
+      };
+
+      var chart = new google.charts.Line(document.getElementById('linechart_material'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+    }
+    </script>
+
+    <h3>
+        On a lighter note, perhaps this image looks a bit familiar? <br>
+    </h3>
+    <img style="width: 250px; height: 200px" src="https://image.cnbcfm.com/api/v1/image/106876907-1619909921648-20210501-9XKJY-daily-covid-cases-in-india.png?v=1619909941&w=740&h=409">
+
+    <hr>
+    <h1>Some of our top buyers</h1>
+    <ol>
+    <% for (var i = 0; i < topbuyers.length; i++) { %>
+        <li><%= topbuyers[i][0] %> bought <%= topbuyers[i][1] %> items! </li>
+    <% } %>
+    </ol>
+    <hr>
+
+    <h1>Some of our top Rated Sellers</h1>
+    <ol>
+    <% for (var i = 0; i < topratedsellers.length; i++) { %>
+        <li><%= topratedsellers[i][0] %> is rated <%= topratedsellers[i][1] %>  for their <%= topratedsellers[i][2] %> orders! </li>
+    <% } %>
+    </ol>
+
+    <hr>
+    <h1>Some of our Heroes</h1>
+    <ol>
+    <% for (var i = 0; i < topdelagents.length; i++) { %>
+        <li><%= topdelagents[i][0] %> has delivered <%= topdelagents[i][1] %> orders! </li>
+    <% } %>
+    </ol>
+    <hr>
+
+</main>
+<%- include('../includes/end.ejs') %>

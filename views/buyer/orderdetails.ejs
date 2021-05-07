@@ -18,35 +18,41 @@
             <div class="cost" style="font-size: 1rem;">
                 Total Cost: ₹ <%= order.totalcost %> /-
             </div>
-            <div class="status" style="font-size: 1rem;">
-                Status: <%= order.status %>
-            </div>
-            <div class="seller" style="font-size: 1rem;">
-                Sold by <%= order.seller %>
-            </div>
             <div class="itemlist">
                 <table style="width:100%">
                     <tr>
                         <th>Product</th>
+                        <th>Sold By</th>
                         <th>Quantity</th> 
                         <th>Cost per Item</th>
+                        <th>Status</th>
+                        <th>Delivery Agent</th>
+                        <th>Agent Contact</th>
                         <th>Rating Given</th>
                     </tr>
-                <% for (var j = 0; j < order.product_id_list.length; j++) { %>
-                <% prod_id = order.product_id_list[j]; %>
-                <% prod_name = order.product_name_list[j]; %>
-                <% quant = order.product_quantity_list[j]; %>
-                <% cost = order.product_cost_list[j]; %>
-                <% rating = order.product_rating_list[j]; %>
+                <% for (var j = 0; j < order.product_list.length; j++) { %>
+                <% prod_id = order.product_list[j].id; %>
+                <% prod_name = order.product_list[j].name; %>
+                <% seller = order.product_list[j].seller; %>
+                <% quant = order.product_list[j].quantity; %>
+                <% cost = order.product_list[j].cost; %>
+                <% status = order.product_list[j].status; %>
+                <% delagent = order.product_list[j].delagent; %>
+                <% delcontact = order.product_list[j].delcontact; %>
+                <% rating = order.product_list[j].rating; %>
                 <tr>
                     <td><%= prod_name %></td>
+                    <td><%= seller %></td>
                     <td><%= quant %></td>
                     <td><%= cost %></td>
+                    <td><%= status %></td>
+                    <td><%= delagent %></td>
+                    <td><%= delcontact %></td>
                     <td>
                         <form action="/buyer/rating", method="post">
-                          <label for="rating">Enter New Quantity:</label>
-                          <input type="number" id="rating" min="0" max="5" name="rating" placeholder="<%= rating %>">
-                          <input type="submit" value="Rate!" style="color: #FF8C00">
+                          <label for="rating">Rating:</label>
+                          <input type="number" id="rating" min="1" max="5" name="rating" placeholder="<%= rating %>">
+                          <input type="submit" value="Update Rating!" style="color: #FF8C00">
                         </form>
                     </td>
                 </tr>

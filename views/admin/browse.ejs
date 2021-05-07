@@ -39,8 +39,10 @@
                 <div class="rating">
                     Rating: <%= product.rating %>
                 </div>
-                <div class="category">
-                    Category: <%= product.category %>
+                <div class="button">
+                    <form action="/admin/openup" method="post">
+                        <input style="background-color: #FF8C00" id="<%= product.id %>" type="submit" name="openup" value="View details" >
+                    </form>
                 </div>
             </div>
         </div>
