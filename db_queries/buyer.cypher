@@ -22,18 +22,18 @@ MATCH (p:product)-[c:cart]->(b:buyer{id:bid})
 RETURN p ,c;
 
 // add to cart - buyer
-MATCH (p:product{id:pid}), (b:buyer{id:bid})
+MATCH (p:product{id:"0000004545"}), (b:buyer{id:"AA"})
 MERGE (p)-[c:cart]->(b)
-ON CREATE SET c.quantity=qty
-ON MATCH SET c.quantity=c.quantity + qty;
+ON CREATE SET c.quantity=3
+ON MATCH SET c.quantity=c.quantity + 3;
 
 // remove from cart - buyer
 MATCH (p:product{id:pid})-[c:cart]->(b:buyer{id:bid})
 DELETE c;
 
 // place order - buyer
-MATCH (p:product)-[c:cart]->(b:buyer{id:bid})
-create (o:order{timestamp:timestamp(), o_id:order_id, status:"requested", quantity:c.quantity}),
+MATCH (p:product)-[c:cart]->(b:buyer{id:"AA"})
+create (o:order{timestamp:timestamp(), o_id:101, status:"requested", quantity:c.quantity}),
 (b)-[:buyer_order]->(o)-[:order_product]->(p)
 DELETE c
 with b, o
@@ -43,7 +43,7 @@ MATCH (o2)-[:order_product]->(p2:product)
 MERGE (p)-[:also_bought]->(p2); // updates the also_bought of product
 
 // view order history - buyer
-MATCH (:buyer{id:bid})-[:buyer_order]->(o:order)-[:order_product]->(p:product)
+MATCH (:buyer{id:"AA"})-[:buyer_order]->(o:order)-[:order_product]->(p:product)
 RETURN o, p;
 
 // give rating - buyer

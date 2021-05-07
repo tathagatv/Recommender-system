@@ -84,11 +84,11 @@ exports.post_login = (req,res,next) => {
                 role = 'delagent';
             }
             if(len > 0){
-                req.loggedin = true;
-                req.username = result.records[0].get('b.username');
-                req.id = result.records[0].get('b.id');
-                req.role = role;
-                req.mode = mode;
+                req.session.loggedin = true;
+                req.session.username = result.records[0].get('b.username');
+                req.session.uid = result.records[0].get('b.id');
+                req.session.role = role;
+                req.session.mode = mode;
                 res.redirect('/'+ role + '/');
             }else{
                 res.send('Incorrect Username and/or Password!');

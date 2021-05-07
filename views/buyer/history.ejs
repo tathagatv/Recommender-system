@@ -32,7 +32,9 @@
                 </div>
                 <div class="button">
                     <form action="/buyer/orderdetails" method="post">
-                        <input style="background-color: #FF8C00" id="<%= order.id %>" type="submit" name="openup" value="View details" >
+                        <input type="hidden" name="o_id" value="<%= order.orderid %>">
+                        <input type="hidden" name="totalcost" value="<%= order.totalcost %>">
+                        <input style="background-color: #FF8C00" type="submit" name="openup" value="View details">
                     </form>
                 </div>
             </div>
