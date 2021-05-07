@@ -69,11 +69,39 @@ exports.get_signup = (req,res,next) => {
     });
 };
 
-exports.get_logout = (req,res,next) => {
+exports.post_login = (req,res,next) => {
+    var username = req.body.uname;
+	var password = req.body.psw;
+    var mode = req.body.mode;
+
+    db_session
+        .run("match (b:"+ mode +"{username: $uname, password: $psw}) return b.id, b.username",
+            {uname: username, psw: password})
+        .then(function(result){
+            var len = result.records.length;
+            var role = mode;
+            if(mode=='del_personnel'){
+                role = 'delagent';
+            }
+            if(len > 0){
+                req.loggedin = true;
+                req.username = result.records[0].get('b.username');
+                req.id = result.records[0].get('b.id');
+                req.role = role;
+                req.mode = mode;
+                res.redirect('/'+ role + '/');
+            }else{
+                res.send('Incorrect Username and/or Password!');
+            }
+        });
+    
+};
+
+exports.post_signup = (req,res,next) => {
     arr = []
-    res.render('base/logout', {
-        pageTitle: 'Log Out',
-        path: '/base/logout',
+    res.render('base/signup', {
+        pageTitle: 'Sign Up',
+        path: '/base/signup',
         editing: false,
         // prods: result.rows
         prods: arr
