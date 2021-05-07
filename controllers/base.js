@@ -45,7 +45,7 @@ class example_admin_seller {
 
 exports.get_browse = (req,res,next) => {
 	// TODO Force Logout here
-    p = new example_base_prod("BG", "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg", "Tathagat", "150", "5", "Randi");
+    p = new example_prod_long();
     arr = [p,p,p,p];
     res.render('base/browse', {
         pageTitle: 'Browse',
