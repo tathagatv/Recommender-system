@@ -1,0 +1,40 @@
+<div class="backdrop"></div>
+<header class="main-header">
+    <button id="side-menu-toggle">Menu</button>
+    <div class="main-header__nav">
+        <ul class="main-header__item-list">
+            <li class="main-header__item">
+                <a class="<%= path === '/seller/onsale' ? 'active' : '' %>" href="/seller/onsale">On Sale</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/seller/addnew' ? 'active' : '' %>" href="/seller/addnew">Add new</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/seller/past' ? 'active' : '' %>" href="/seller/past">Past Orders</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/seller/requests' ? 'active' : '' %>" href="/seller/requests">Order requests</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/seller/ongoing' ? 'active' : '' %>" href="/seller/ongoing">Ongoing Orders</a>
+            </li>
+            <li class="main-header__item">
+                <a class="<%= path === '/seller/about' ? 'active' : '' %>" href="/seller/about">About</a>
+            </li>
+        </ul>
+    </div>
+</header>
+
+<nav class="mobile-nav">
+    <ul class="mobile-nav__item-list">
+        <li class="mobile-nav__item">
+            <a class="<%= path === '/base/browse' ? 'active' : '' %>" href="/base/browse">Browse</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="<%= path === '/base/about' ? 'active' : '' %>" href="/base/about">About</a>
+        </li>
+        <li class="mobile-nav__item">
+            <a class="<%= path === '/base/login' ? 'active' : '' %>" href="/base/login">Login</a>
+        </li>
+    </ul>
+</nav>

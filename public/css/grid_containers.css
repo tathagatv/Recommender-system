@@ -9,9 +9,11 @@
 .contact { grid-area: contact; }
 .mail { grid-area: mail; }
 .id { grid-area: id; }
+.itemlist { grid-area: itemlist; }
 .customtxt { grid-area: customtxt; }
 .readnum { grid-area: readnum; }
 .button { grid-area: button; }
+.form { grid-area: form; }
 
 .tri-grid-container {
   display: grid;
@@ -21,6 +23,11 @@
 .tetra-grid-container {
   display: grid;
   grid-template-columns: auto auto auto auto;
+  background-color: #F5F5F5;
+}
+.penta-grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
   background-color: #F5F5F5;
 }
 .grid-item {
@@ -50,114 +57,80 @@
   background-color: #F5F5F5;
 }
 
-.admin_seller_details {
+.seller_onsale {
   display: grid;
   grid-template-areas:
-  'name name name name name'
-  'address address address address address'
-  'contact contact contact contact contact'
-  'mail mail mail mail mail';
+  'name name name name name name name name name'
+  'image image image image cost cost cost cost cost'
+  'image image image image rating rating rating rating rating'
+  'image image image image category category category category category'
+  'image image image image form form form form form';
   grid-gap: 5px;
   padding: 5px;
   height: auto
   width: auto;
   text-align: center;
 }
-.admin_seller_details > div {
+.seller_onsale > div {
   text-align: center;
   font-size: 0.8rem;
   background-color: #F5F5F5;
 }
 
-.admin_buyer_details {
-  display: grid;
-  grid-template-areas:
-    'name name name name name'
-    'address address address address address'
-    'contact contact contact contact contact'
-    'mail mail mail mail mail'
-  grid-gap: 3px;
-  background-color: #2196F3;
-  padding: 3px;
-}
-.admin_buyer_details > div {
-  background-color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  padding: 20px 0;
-  font-size: 30px;
-}
-
-.admin_del_agent_details {
-  display: grid;
-  grid-template-areas:
-    'name name name name name'
-    'address address address address address'
-    'contact contact contact contact contact'
-    'mail mail mail mail mail'
-  grid-gap: 3px;
-  background-color: #2196F3;
-  padding: 3px;
-}
-.admin_del_agent_details > div {
-  background-color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  padding: 20px 0;
-  font-size: 30px;
-}
-
 .seller_past_orders {
   display: grid;
   grid-template-areas:
-    'id id id id id id id id id'
-    'image image image image name name name name name'
-    'image image image image buyer buyer buyer buyer buyer'
-    'image image image image cost cost quantity quantity quantity'
-    'image image image image category category category category category'
-  grid-gap: 3px;
-  background-color: #2196F3;
-  padding: 3px;
+  'id id id id id'
+  'buyer buyer buyer buyer buyer'
+  'itemlist itemlist itemlist itemlist itemlist'
+  'cost cost cost cost cost';
+  grid-gap: 5px;
+  padding: 5px;
+  height: 300px
+  width: auto;
+  text-align: center;
 }
 .seller_past_orders > div {
-  background-color: rgba(255, 255, 255, 0.8);
   text-align: center;
-  padding: 20px 0;
-  font-size: 30px;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
 }
 
-.seller_on_sale {
+.seller_requests {
   display: grid;
   grid-template-areas:
-    'name name name name name name name name name'
-    'image image image image cost cost cost cost cost'
-    'image image image image rating rating rating rating rating'
-    'image image image image category category category category category'
-    'image image image image customtxt readnum button'
-  grid-gap: 3px;
-  background-color: #2196F3;
-  padding: 3px;
-}
-.seller_on_sale > div {
-  background-color: rgba(255, 255, 255, 0.8);
+  'id id id id id'
+  'buyer buyer buyer buyer buyer'
+  'itemlist itemlist itemlist itemlist itemlist'
+  'cost cost cost cost cost'
+  '. . . . button';
+  grid-gap: 5px;
+  padding: 5px;
+  height: 300px
+  width: auto;
   text-align: center;
-  padding: 20px 0;
-  font-size: 30px;
+}
+.seller_requests > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
 }
 
-.seller_pending_orders {
+.seller_ongoing {
   display: grid;
   grid-template-areas:
-    'id id id id id id id id id'
-    'image image image image name name name name name'
-    'image image image image buyer buyer buyer buyer buyer'
-    'image image image image cost cost quantity quantity quantity'
-    'image image image image customtxt customtxt customtxt customtxt button'
-  grid-gap: 3px;
-  background-color: #2196F3;
-  padding: 3px;
-}
-.seller_pending_orders > div {
-  background-color: rgba(255, 255, 255, 0.8);
+  'id id id id id'
+  'buyer buyer buyer buyer buyer'
+  'itemlist itemlist itemlist itemlist itemlist'
+  'cost cost cost cost cost';
+  grid-gap: 5px;
+  padding: 5px;
+  height: 300px
+  width: auto;
   text-align: center;
-  padding: 20px 0;
-  font-size: 30px;
+}
+.seller_ongoing > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
 }

@@ -9,6 +9,7 @@ class example_base_prod {
         this.cost = cost;
         this.rating = rating;
         this.category = category;
+        this.quantity = 10;
     }
 }
 

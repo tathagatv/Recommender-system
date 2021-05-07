@@ -1,0 +1,39 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+<%- include('../includes/sellernav.ejs') %>
+
+<main>
+    <h2>Add a new product for sale!</h2>
+    <form action="http://localhost:3000/login" method="post">
+      <div class="container" style="border-style: double;">
+        <label for="pname"><b>Product Name</b></label>
+        <input type="text" placeholder="Enter Product Name" name="pname" required value="<% if (editing) { %><%= product.name %><% } %>">
+
+        <label for="cost"><b>Cost</b></label>
+        <input type="number" placeholder="Cost" name="cost" min="0" required value="<% if (editing) { %><%= product.cost %><% } %>">
+        <br>
+        <label for="brand"><b>Brand</b></label>
+        <input type="text" placeholder="Brand" name="brand" required value="<% if (editing) { %><%= product.brand %><% } %>">
+
+        <label for="category"><b>Category</b></label>
+        <input type="text" placeholder="Category" name="category" required value="<% if (editing) { %><%= product.category %><% } %>">
+
+        <label for="description"><b>Description</b></label><br>
+        <textarea name="description" placeholder="Description of product" rows="4" cols="60" required value="<% if (editing) { %><%= product.description %><% } %>">
+        <br>
+        </textarea>
+        <label for="quantity"><b>Quantity</b></label>
+        <input type="number" placeholder="Quantity" min="1" name="quantity" required value="<% if (editing) { %><%= product.quantity %><% } %>">
+
+        <br><label for="image"><b>Image</b></label>
+        <input type="text" placeholder="Image Link" name="image" required value="<% if (editing) { %><%= product.image %><% } %>">
+        
+        <button type="submit" style="text-align: center;">Add Product</button>
+      </div>
+    </form>
+</main>
+<%- include('../includes/end.ejs') %>

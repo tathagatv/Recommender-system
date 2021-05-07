@@ -7,6 +7,7 @@ const app = express();
 
 const adminRo = require('./routes/admin');
 const baseRo = require('./routes/base');
+const sellerRo = require('./routes/seller');
 
 // View engine
 app.set('views', path.join(__dirname, 'views'));
@@ -19,6 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/admin',adminRo);
 app.use('/',baseRo);
+app.use('/seller',sellerRo);
 
 // app.get('/', function(req, res){
 //     session
