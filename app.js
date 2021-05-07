@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const adminRo = require('./routes/admin');
-const userRo = require('./routes/user');
+const baseRo = require('./routes/base');
 
 // View engine
 app.set('views', path.join(__dirname, 'views'));
@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/admin',adminRo);
-app.use('/',userRo);
+app.use('/',baseRo);
 
 // app.get('/', function(req, res){
 //     session

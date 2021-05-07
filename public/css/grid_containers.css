@@ -1,0 +1,163 @@
+.image { grid-area: image; }
+.seller { grid-area: seller; }
+.buyer { grid-area: buyer; }
+.name { grid-area: name; }
+.cost { grid-area: cost; }
+.rating { grid-area: rating; }
+.category { grid-area: category; }
+.address { grid-area: address; }
+.contact { grid-area: contact; }
+.mail { grid-area: mail; }
+.id { grid-area: id; }
+.customtxt { grid-area: customtxt; }
+.readnum { grid-area: readnum; }
+.button { grid-area: button; }
+
+.tri-grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  background-color: #F5F5F5;
+}
+.tetra-grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  background-color: #F5F5F5;
+}
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  font-size: 30px;
+  text-align: center;
+}
+
+.base_product {
+  display: grid;
+  grid-template-areas:
+  'name name name name name name name name name'
+  'image image image image seller seller seller seller seller'
+  'image image image image cost cost cost cost cost'
+  'image image image image rating rating rating rating rating'
+  'image image image image category category category category category';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.base_product > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.admin_seller_details {
+  display: grid;
+  grid-template-areas:
+  'name name name name name'
+  'address address address address address'
+  'contact contact contact contact contact'
+  'mail mail mail mail mail';
+  grid-gap: 5px;
+  padding: 5px;
+  height: auto
+  width: auto;
+  text-align: center;
+}
+.admin_seller_details > div {
+  text-align: center;
+  font-size: 0.8rem;
+  background-color: #F5F5F5;
+}
+
+.admin_buyer_details {
+  display: grid;
+  grid-template-areas:
+    'name name name name name'
+    'address address address address address'
+    'contact contact contact contact contact'
+    'mail mail mail mail mail'
+  grid-gap: 3px;
+  background-color: #2196F3;
+  padding: 3px;
+}
+.admin_buyer_details > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+}
+
+.admin_del_agent_details {
+  display: grid;
+  grid-template-areas:
+    'name name name name name'
+    'address address address address address'
+    'contact contact contact contact contact'
+    'mail mail mail mail mail'
+  grid-gap: 3px;
+  background-color: #2196F3;
+  padding: 3px;
+}
+.admin_del_agent_details > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+}
+
+.seller_past_orders {
+  display: grid;
+  grid-template-areas:
+    'id id id id id id id id id'
+    'image image image image name name name name name'
+    'image image image image buyer buyer buyer buyer buyer'
+    'image image image image cost cost quantity quantity quantity'
+    'image image image image category category category category category'
+  grid-gap: 3px;
+  background-color: #2196F3;
+  padding: 3px;
+}
+.seller_past_orders > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+}
+
+.seller_on_sale {
+  display: grid;
+  grid-template-areas:
+    'name name name name name name name name name'
+    'image image image image cost cost cost cost cost'
+    'image image image image rating rating rating rating rating'
+    'image image image image category category category category category'
+    'image image image image customtxt readnum button'
+  grid-gap: 3px;
+  background-color: #2196F3;
+  padding: 3px;
+}
+.seller_on_sale > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+}
+
+.seller_pending_orders {
+  display: grid;
+  grid-template-areas:
+    'id id id id id id id id id'
+    'image image image image name name name name name'
+    'image image image image buyer buyer buyer buyer buyer'
+    'image image image image cost cost quantity quantity quantity'
+    'image image image image customtxt customtxt customtxt customtxt button'
+  grid-gap: 3px;
+  background-color: #2196F3;
+  padding: 3px;
+}
+.seller_pending_orders > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+}
