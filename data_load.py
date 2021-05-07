@@ -41,11 +41,13 @@ for cat in main_categories:
         os.system('wget -O %s %s%s' % (f_path, amazon_ratingdata_url, f_name))
         print('\nDownloaded %s review data - %s' % (cat, f_path))
 
-
-product_cypher_file = 'product_data.cypher'
-user_cypher_file = 'user_data.cypher'
+cypher_dir = 'db_queries/'
+product_cypher_file = cypher_dir + 'product_data.cypher'
+user_cypher_file = cypher_dir + 'user_data.cypher'
 usd_inr = 72.36
 default_price = 100.0
+num_products = 1e3
+num_rating = 1e3
 
 def add_product(cat):
     metadata_path = os.path.join(data_dir, 'meta_%s.json.gz' % cat)
@@ -59,13 +61,13 @@ def add_product(cat):
             ## clean data
 
             ## title, brand
-            data['title'] = data['title'].replace('"', '\\"')
-            data['brand'] = data['brand'].replace('"', '\\"')
+            data['title'] = data['title'].replace('"', ' ')
+            data['brand'] = data['brand'].replace('"', ' ')
 
 
             ## description
             if len(data['description'])>0:
-                data['description'] = data['description'][0].replace('"', '\\"') ## take only the 1st description
+                data['description'] = data['description'][0].replace('"', ' ') ## take only the 1st description
             else:
                 data['description'] = ''
 
@@ -107,7 +109,7 @@ def add_product(cat):
             
             g.write(query)
 
-            if i>1e4:
+            if i>num_products:
                 break
         
         g.close()
@@ -138,7 +140,7 @@ def add_product_edges(cat):
             
             g.write(query)
 
-            if i>1e4:
+            if i>num_products:
                 break
         
         g.close()
@@ -152,16 +154,16 @@ def add_user(cat):
         i=0
         for row in reader:
 
-            query = 'MATCH (p:product{id:"%s"%s) ' % (row[0], '}')
-            query += 'MERGE (u:buyer{id:"%s", username:"a", password:"a"%s)\n' % (row[1], '}')
-            query += 'CREATE (u)-[:buyer_rating{rating:%d, timestamp:%d%s]->(p);\n' % (float(row[2]), int(row[3]), '}')
+            # query = 'MATCH (p:product{id:"%s"%s) ' % (row[0], '}')
+            query = 'MERGE (u:buyer{id:"%s", username:"a", password:"a"%s);\n' % (row[1], '}')
+            # query += 'CREATE (u)-[:buyer_rating{rating:%d, timestamp:%d%s]->(p);\n' % (float(row[2]), int(row[3]), '}')
 
             g = open(user_cypher_file, 'a')
             g.write(query)
             g.close()
 
             i += 1
-            if i>1e5:
+            if i>num_rating:
                 break
 
         print("%d ratings in %s category" % (i, cat))
@@ -173,10 +175,10 @@ args = parser.parse_args()
 
 if args.product:
     with open(product_cypher_file, 'w') as f:
-        query = 'MATCH(n) DETACH DELETE n;\n'
-        # query += 'CREATE INDEX IF NOT EXISTS FOR (p:product) on (p.id);\n'
-        # query += 'CREATE INDEX IF NOT EXISTS FOR (c:category) on (c.name);\n'
-        # query += 'CREATE INDEX IF NOT EXISTS FOR (b:brand) on (b.name);\n'
+        query = 'MATCH(n:product) DETACH DELETE n;\n'
+        query += 'MATCH(n:brand) DETACH DELETE n;\n'
+        query += 'MATCH(n:category) DETACH DELETE n;\n'
+
         f.write(query)
     for c in main_categories:
         add_product(c)
@@ -189,10 +191,3 @@ if args.user:
         f.write(query)
     for cat in main_categories:
         add_user(cat)
-
-    with open(user_cypher_file, 'a') as f:
-        query = 'CREATE (u:seller{id:1, username="a", password="a"%s);\n' % ('}')
-        query += 'CREATE (u:admin{id:1, username="a", password="a"%s);\n' % ('}')
-        query += 'CREATE (u:del_personnel{id:1, username="a", password="a"%s);\n' % ('}')
-        query += 'MATCH (p:product) (s:seller) CREATE (p)-[:prod_sell]->(s);\n'
-        f.write(query)
