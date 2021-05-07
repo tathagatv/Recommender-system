@@ -253,7 +253,6 @@
   grid-template-areas:
   'id id id id id'
   'cost cost cost cost cost'
-  'seller seller seller seller seller'
   'itemlist itemlist itemlist itemlist itemlist';
   grid-gap: 5px;
   padding: 5px;

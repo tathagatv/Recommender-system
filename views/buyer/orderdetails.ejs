@@ -18,13 +18,11 @@
             <div class="cost" style="font-size: 1rem;">
                 Total Cost: ₹ <%= order.totalcost %> /-
             </div>
-            <div class="seller" style="font-size: 1rem;">
-                Sold by <%= order.seller %>
-            </div>
             <div class="itemlist">
                 <table style="width:100%">
                     <tr>
                         <th>Product</th>
+                        <th>Sold By</th>
                         <th>Quantity</th> 
                         <th>Cost per Item</th>
                         <th>Status</th>
@@ -35,6 +33,7 @@
                 <% for (var j = 0; j < order.product_list.length; j++) { %>
                 <% prod_id = order.product_list[j].id; %>
                 <% prod_name = order.product_list[j].name; %>
+                <% seller = order.product_list[j].seller; %>
                 <% quant = order.product_list[j].quantity; %>
                 <% cost = order.product_list[j].cost; %>
                 <% status = order.product_list[j].status; %>
@@ -43,6 +42,7 @@
                 <% rating = order.product_list[j].rating; %>
                 <tr>
                     <td><%= prod_name %></td>
+                    <td><%= seller %></td>
                     <td><%= quant %></td>
                     <td><%= cost %></td>
                     <td><%= status %></td>
