@@ -169,9 +169,6 @@
   grid-template-areas:
   'id id id id id'
   'cost cost cost cost cost'
-  'status status status status status'
-  'agentname agentname agentname agentname agentname'
-  'agentnumber agentnumber agentnumber agentnumber agentnumber'
   '. . .  button button';
   grid-gap: 5px;
   padding: 5px;
@@ -211,7 +208,6 @@
   'id id id id id'
   'cost cost cost cost cost'
   'seller seller seller seller seller'
-  'status status status status status'
   'itemlist itemlist itemlist itemlist itemlist';
   grid-gap: 5px;
   padding: 5px;

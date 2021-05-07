@@ -30,15 +30,6 @@
                 <div class="cost" style="font-size: 1rem;">
                     Cost: ₹ <%= order.totalcost %> /-
                 </div>
-                <div class="status" style="font-size: 1rem;">
-                    Order status: <%= order.status %>
-                </div>
-                <div class="agentname" style="font-size: 1rem;">
-                    Delivery Agent: <%= order.delagent %>
-                </div>
-                <div class="agentnumber" style="font-size: 1rem;">
-                    Agent Contact: <%= order.delcontact %>
-                </div>
                 <div class="button">
                     <form action="/buyer/orderdetails" method="post">
                         <input style="background-color: #FF8C00" id="<%= order.id %>" type="submit" name="openup" value="View details" >

@@ -20,6 +20,9 @@ class example_prod_long {
         this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
         this.seller = "Tathagat";
         this.cost = 150;
+        this.status = "Shipped"
+        this.delagent = "ABCD";
+        this.delcontact = "9876543210";
         this.rating = 5;
         this.category = "Randi";
         this.quantity = 10;
@@ -52,24 +55,14 @@ class example_order_short {
     constructor(){
         this.orderid = 1;
         this.totalcost = 88654;
-        this.delagent = "ABCD";
-        this.delcontact = "9876543210";
-        this.status = "Shipped";
-        this.seller = "ISIS"
     }
 }
 
 class example_order_long {
-    constructor(){
+    constructor(p){
         this.orderid = 1;
         this.totalcost = 88654;
-        this.product_id_list = [1,2,3,4,5];
-        this.product_name_list = ["P1", "P2", "P3", "P4", "P5"];
-        this.product_quantity_list = [44,21,11,555,67];
-        this.product_cost_list = [44,21,11,555,67];
-        this.product_rating_list = [5,2,4,3,5];
-        this.status = "Shipped";
-        this.seller = "ISIS"
+        this.product_list = [p,p,p,p,p,p];
     }
 }
 
@@ -171,7 +164,8 @@ exports.post_openup = (req,res,next) => {
 exports.post_orderdetails = (req,res,next) => {
     // get the order_id;
     // compute the corresponding "example_order_long" object by quering using the order id.
-    p = new example_order_long();
+    p = new example_prod_long()
+    p = new example_order_long(p);
     res.render('buyer/orderdetails', {
         pageTitle: 'Order Details',
         path: '/buyer/orderdetails',

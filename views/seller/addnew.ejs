@@ -24,11 +24,9 @@
 
         <label for="description"><b>Description</b></label><br>
         <textarea name="description" placeholder="Description of product" rows="4" cols="60" required value="<% if (editing) { %><%= product.description %><% } %>">
-        <br>
         </textarea>
         <label for="quantity"><b>Quantity</b></label>
         <input type="number" placeholder="Quantity" min="1" name="quantity" required value="<% if (editing) { %><%= product.quantity %><% } %>">
-
         <br><label for="image"><b>Image</b></label>
         <input type="text" placeholder="Image Link" name="image" required value="<% if (editing) { %><%= product.image %><% } %>">
         
