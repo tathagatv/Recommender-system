@@ -4,6 +4,7 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 
 const app = express();
+const session = require('express-session');
 
 const adminRo = require('./routes/admin');
 const baseRo = require('./routes/base');
@@ -19,6 +20,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({secret: 'blank'}));
 
 app.use('/admin',adminRo);
 app.use('/',baseRo);
