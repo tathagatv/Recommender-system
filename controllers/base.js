@@ -24,6 +24,7 @@ class example_admin_seller {
 
 
 exports.get_browse = (req,res,next) => {
+	// TODO Force Logout here
     p = new example_base_prod("BG", "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg", "Tathagat", "150", "5", "Randi");
     arr = [p,p,p,p];
     res.render('base/browse', {
@@ -62,6 +63,17 @@ exports.get_signup = (req,res,next) => {
     res.render('base/signup', {
         pageTitle: 'Sign Up',
         path: '/base/signup',
+        editing: false,
+        // prods: result.rows
+        prods: arr
+    });
+};
+
+exports.get_logout = (req,res,next) => {
+    arr = []
+    res.render('base/logout', {
+        pageTitle: 'Log Out',
+        path: '/base/logout',
         editing: false,
         // prods: result.rows
         prods: arr

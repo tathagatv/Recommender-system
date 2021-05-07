@@ -12,5 +12,6 @@ router.get('/about',baseCon.get_about);
 
 router.get('/login',baseCon.get_login);
 router.get('/signup',baseCon.get_signup);
+router.get('/logout',baseCon.get_logout);
 
 module.exports = router;
