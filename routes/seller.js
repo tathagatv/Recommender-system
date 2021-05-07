@@ -15,5 +15,6 @@ router.get('/ongoing',sellerCon.get_ongoing);
 router.post('/addnew', sellerCon.post_addnew)
 router.post('/sort', sellerCon.post_sort)
 router.post('/ship', sellerCon.post_ship)
+router.post('/openup', sellerCon.post_openup);
 
 module.exports = router;

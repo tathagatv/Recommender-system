@@ -39,9 +39,6 @@
                 <div class="rating">
                     Rating: <%= product.rating %>
                 </div>
-                <div class="category">
-                    Category: <%= product.category %>
-                </div>
                 <div class="button">
                     <form action="/buyer/openup" method="post">
                         <input type="hidden" name="pid" value="<%= product.id %>" >

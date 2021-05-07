@@ -8,7 +8,7 @@
 <%- include('../includes/basenav.ejs') %>
 
 <main>
-    <form action="/base/sort">
+    <form action="/sort">
       <label for="search">Search:</label>
       <input type="text" id="search" name="search" placeholder="Search our products">
       <input type="submit" value="Submit"><br><br>
@@ -39,8 +39,10 @@
                 <div class="rating">
                     Rating: <%= product.rating %>
                 </div>
-                <div class="category">
-                    Category: <%= product.category %>
+                <div class="button">
+                    <form action="/openup" method="post">
+                        <input style="background-color: #FF8C00" id="<%= product.id %>" type="submit" name="openup" value="View details" >
+                    </form>
                 </div>
             </div>
         </div>

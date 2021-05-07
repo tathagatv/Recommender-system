@@ -5,11 +5,11 @@
 </head>
 
 <body>
-<%- include('../includes/buyernav.ejs') %>
+<%- include('../includes/sellernav.ejs') %>
 
 <main>
     <div class="grid-item">
-        <div class="buyer_product_details">
+        <div class="seller_product_details">
             <div class="name" style="background-color: #fFf1e1; font-size: 1rem;">
                 <h1>
                     <%= product.name %>
@@ -27,6 +27,9 @@
             <div class="rating" style="font-size: 1rem;">
                 Rating: <%= product.rating %>
             </div>
+            <div class="quantity" style="font-size: 1rem;">
+                Items in stock: <%= product.quantity %>
+            </div>
             <div class="category" style="font-size: 1rem;">
                 Categories: <br>
                 <% for (var i = 0; i < product.categories.length; i++) {%>
@@ -35,14 +38,14 @@
                 <% } %>
             </div>
             <div class="form">
-                    <form action="/buyer/addtocart", method="post">
-                      <label for="addtocart">Quantity:</label>
-                      <input type="number" id="addtocart" name="addtocart" min="1" max="<%= product.quantity %>" placeholder="1-<%= product.quantity %>">
-                      <input type="submit" value="Add to Cart!" style="color: #FF8C00">
-                    </form>
-                </div>
+                <form action="/seller/addnew", method="post">
+                  <label for="addnew">Enter New Quantity:</label>
+                  <input type="number" id="addnew" name="addnew" placeholder="<%= product.quantity %>">
+                  <input type="submit" value="Restock!" style="color: #FF8C00">
+                </form>
+            </div>
             <div class="customtxt">
-                Rating: <br>
+                Description: <br>
                 <textarea readonly rows="6" cols="130">
                      <%= product.description %>
                 </textarea>
@@ -56,7 +59,7 @@
     <% for (var i = 0; i < product.also_viewed.length; i++) { %>
     <% pp = product.also_viewed[i]; %>
         <div class="grid-item">
-            <div class="buyer_browse">
+            <div class="base_product">
                 <div class="name" style="background-color: #fFf1e1;">
                     <h1>
                         <%= pp.name %>
@@ -75,7 +78,7 @@
                     Rating: <%= pp.rating %>
                 </div>
                 <div class="button">
-                    <form action="/buyer/openup" method="post">
+                    <form action="/openup" method="post">
                         <input style="background-color: #FF8C00" id="<%= pp.id %>" type="submit" name="openup" value="View details" >
                     </form>
                 </div>
@@ -90,7 +93,7 @@
     <% for (var i = 0; i < product.also_bought.length; i++) { %>
     <% pp = product.also_bought[i]; %>
         <div class="grid-item">
-            <div class="buyer_browse">
+            <div class="base_product">
                 <div class="name" style="background-color: #fFf1e1;">
                     <h1>
                         <%= pp.name %>
@@ -109,7 +112,7 @@
                     Rating: <%= pp.rating %>
                 </div>
                 <div class="button">
-                    <form action="/buyer/openup" method="post">
+                    <form action="/openup" method="post">
                         <input style="background-color: #FF8C00" id="<%= pp.id %>" type="submit" name="openup" value="View details" >
                     </form>
                 </div>
