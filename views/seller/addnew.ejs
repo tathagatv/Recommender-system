@@ -8,7 +8,7 @@
 
 <main>
     <h2>Add a new product for sale!</h2>
-    <form action="http://localhost:3000/login" method="post">
+    <form action="http://localhost:3000/seller/addnew" method="post">
       <div class="container" style="border-style: double;">
         <label for="pname"><b>Product Name</b></label>
         <input type="text" placeholder="Enter Product Name" name="pname" required value="<% if (editing) { %><%= product.name %><% } %>">

@@ -44,7 +44,7 @@
                 </div>
                 <div class="button">
                     <form action="/seller/ship" method="post">
-                        <input style="background-color: #FF8C00" id="<%= order.id %>" type="submit" name="ship" value="Ship!" >
+                        <input style="background-color: #FF8C00" value="<%= order.id %>" type="hidden" name="ship">
                     </form>
                 </div>
 
