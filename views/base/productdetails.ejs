@@ -72,6 +72,7 @@
                 </div>
                 <div class="button">
                     <form action="/openup" method="post">
+                        <input type="hidden" name="pid" value="<%= pp.id %>" >
                         <input style="background-color: #FF8C00" id="<%= pp.id %>" type="submit" name="openup" value="View details" >
                     </form>
                 </div>
@@ -106,6 +107,7 @@
                 </div>
                 <div class="button">
                     <form action="/openup" method="post">
+                        <input type="hidden" name="pid" value="<%= pp.id %>" >
                         <input style="background-color: #FF8C00" id="<%= pp.id %>" type="submit" name="openup" value="View details" >
                     </form>
                 </div>

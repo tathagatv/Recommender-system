@@ -46,7 +46,7 @@ product_cypher_file = cypher_dir + 'product_data.cypher'
 user_cypher_file = cypher_dir + 'user_data.cypher'
 usd_inr = 72.36
 default_price = 100.0
-num_products = 1e3
+num_products = 1e4
 num_rating = 1e3
 
 def add_product(cat):
