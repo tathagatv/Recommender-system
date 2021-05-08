@@ -13,6 +13,7 @@ router.get('/about',baseCon.get_about);
 router.get('/login',baseCon.get_login);
 router.get('/signup',baseCon.get_signup);
 
+router.post('/sort', baseCon.post_sort);
 router.post('/login',baseCon.post_login);
 router.post('/signup',baseCon.post_signup);
 router.post('/openup',baseCon.post_openup);
