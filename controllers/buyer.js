@@ -1,6 +1,5 @@
 const pool= require('../utils/database');
 const Prod = require('../models/prod');
-var JSAlert = require("js-alert");
 
 var randomstring = require("randomstring");
 
@@ -84,7 +83,7 @@ class example_buyer {
 exports.get_browse = (req,res,next) => {
     arr = [];
     db_session
-        .run("match (p:product)-[:prod_sell]->(s:seller) return p, s.name order by p.rating desc limit 5 ")
+        .run("match (p:product)-[:prod_sell]->(s:seller) return p, s.name order by p.rating desc limit 15")
         .then(function(result){
             result.records.forEach(element => {
                 properties = element.get('p').properties;
@@ -172,7 +171,7 @@ exports.post_sort = (req,res,next) => {
         WITH apoc.text.levenshteinDistance($s, p.description)/(1.0+size(p.description)) as output2, p, sl, output1\
         WITH output1*2+output2*2+(5.0-p.rating)*1+(1.0/(p.num_rating+1))*10 as output, p, sl\
         ORDER BY output\
-        RETURN p, sl.name limit 5\
+        RETURN p, sl.name limit 10\
         union match (p:product)-[:prod_sell]->(sl:seller)\
         where p.title contains $s return p, sl.name limit 10", {s: req.body.search})
         .then(function(result){
@@ -213,7 +212,6 @@ exports.post_placeorder = (req,res,next) => {
             tc = result.records[0].get('tc');
             money = result.records[0].get('b.money');
             if (tc > money){
-                JSAlert.alert("Low on balance!");
                 res.redirect('/buyer/cart');
             }else{
                 db_session
@@ -254,7 +252,7 @@ exports.post_openup = (req,res,next) => {
     pid = req.body.pid;
     console.log('prod id = '+ pid);
     db_session
-        .run("MATCH (p:product{id:$pid})-[:also_bought]->(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+        .run("MATCH (p:product{id:$pid})-[:also_bought]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
         .then(function(result){
             also_bought = [];
             result.records.forEach(element => {
@@ -264,7 +262,7 @@ exports.post_openup = (req,res,next) => {
             });
             product.also_bought = also_bought;
         }).then(() => {db_session
-            .run("MATCH (p:product{id:$pid})-[:also_viewed]->(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+            .run("MATCH (p:product{id:$pid})-[:also_viewed]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
             .then(function(result){
                 also_viewed = [];
                 result.records.forEach(element => {
@@ -301,12 +299,20 @@ exports.post_openup = (req,res,next) => {
                             if(result.records.length > 0){
                                 product.brand = result.records[0];
                             }
-                            res.render('buyer/productdetails', {
-                                pageTitle: 'Product Details',
-                                path: '/buyer/productdetails',
-                                editing: false,
-                                product: product
-                            });
+                            db_session
+                            .run("MATCH (p3:product)-[v:view_history]->(b:buyer{id:$b1}), (p:product {id:$p1})\
+                                WHERE timestamp()-v.timestamp < 600000 and p3.id <> p.id\
+                                merge (p)-[:also_viewed]->(p3)\
+                                create (p)-[:view_history{timestamp:timestamp()}]->(b);",
+                                {b1:req.session.uid, p1: pid})
+                            .then(() => {
+                                res.render('buyer/productdetails', {
+                                    pageTitle: 'Product Details',
+                                    path: '/buyer/productdetails',
+                                    editing: false,
+                                    product: product
+                                });
+                            })
                         });
                     });
                 });
@@ -329,10 +335,6 @@ exports.post_orderdetails = (req,res,next) => {
                 prod = element.get('p').properties;
                 seller = element.get('s.name');
                 delagent = element.get('d').properties;
-                console.log(order);
-                console.log(prod);
-                console.log(seller);
-                console.log(delagent);
                 arr.push(new example_prod_long(prod['id'], prod['title'], "", seller, prod['price'], order['status'], delagent['name'],
                 delagent['contact'], order['rating'], "", order['quantity']));
             });
@@ -417,10 +419,6 @@ exports.post_rating = (req,res,next) => {
                         prod = element.get('p').properties;
                         seller = element.get('s.name');
                         delagent = element.get('d').properties;
-                        console.log(order);
-                        console.log(prod);
-                        console.log(seller);
-                        console.log(delagent);
                         arr.push(new example_prod_long(prod['id'], prod['title'], "", seller, prod['price'], order['status'], delagent['name'],
                         delagent['contact'], order['rating'], "", order['quantity']));
                     });
