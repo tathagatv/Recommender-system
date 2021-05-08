@@ -39,7 +39,7 @@ class example_admin_seller {
 
 exports.get_onsale = (req,res,next) => {
     db_session
-        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) return p",{id: req.session.uid})
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) return p limit 100",{id: req.session.uid})
         .then(function(result){
             arr=[];
             for (i=0;i<result.records.length;i++){

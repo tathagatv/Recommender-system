@@ -2,6 +2,38 @@ const Prod = require('../models/prod');
 var sel_id_cnt=2;
 var del_id_cnt=2;
 
+class example_base_prod {
+    constructor(id, name, image, seller, cost, rating){
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.seller = seller;
+        this.cost = cost;
+        this.rating = rating;
+    }
+}
+
+class example_prod_long {
+    constructor(pid, name, img, seller, cost, status,delagent, delcontact,
+        rating, category, qty, brand, description, also_viewed, also_bought){
+        this.id = pid;
+        this.name = name;
+        this.image = img;
+        this.seller = seller;
+        this.cost = cost;
+        this.status = status;
+        this.delagent = delagent;
+        this.delcontact = delcontact;
+        this.rating = rating;
+        this.category = category;
+        this.quantity = qty;
+        this.brand = brand;
+        this.description = description;
+        this.also_viewed = also_viewed;
+        this.also_bought = also_bought;
+    }
+}
+
 class base_prod{
     constructor(id,name, image, cost, seller, rating, quantity, description){
         this.id = id;
@@ -87,7 +119,7 @@ function prod_d(rec){
 
 exports.get_browse = (req,res,next) => {
     db_session
-    .run("match (p:product)-[:prod_sell]->(s:seller) return p,s.name",{})
+    .run("match (p:product)-[:prod_sell]->(s:seller) return p,s.name limit 200")
     .then(function(result){
         arr=[]
         for (i=0;i<result.records.length;i++){
@@ -220,26 +252,37 @@ exports.get_analytics = (req,res,next) => {
       .then(function(result){
         //   result.records --> orders_per_year
         db_session
-            .run("match (b:buyer)-[:buyer_order]->(o:order) with b.name as bn, count(*) as cnt return bn, cnt\
+            .run("match (b:buyer)-[:buyer_order]->(o:order) return b.name as bn, count(*) as cnt\
             order by cnt desc limit 4") // for top buyers
             .then(() => {
                 db_session
                     .run("match (o:order)-[:order_product]->(p:product)-[:prod_sell]->(s:seller)\
-                    return s.name, count(*) cnt order by cnt desc limit 4") // for top sellers
-                    .then();
+                    return s.name, count(*) as cnt order by cnt desc limit 4") // for top sellers
+                    .then(() => {
+                        db_session
+                            .run("match (c:category)-[:prod_cat]-(p:product) return c.name, count(*) as cnt\
+                            order by cnt desc limit 12;")
+                            .then(function(result){
+                                list_of_tuples = [['Category', 'Product count']];
+                                for(i=2; i<result.records.length; i++){
+                                    var rec = result.records[i];
+                                    list_of_tuples.push([rec.get('c.name'), parseInt(rec.get('cnt'))]);
+                                }
+                                console.log(list_of_tuples);
+                                res.render('admin/analytics', {
+                                    pageTitle: 'Analytics',
+                                    path: '/admin/analytics',
+                                    editing: false,
+                                    list_of_tuples: list_of_tuples,
+                                    topbuyers: topbuyers,
+                                    topratedsellers: topratedsellers,
+                                    topdelagents: topdelagents,
+                                    orders_per_year: orders_per_year,
+                                });
+                            });
+                    });
             });
       });
-
-    res.render('admin/analytics', {
-        pageTitle: 'Analytics',
-        path: '/admin/analytics',
-        editing: false,
-        list_of_tuples: list_of_tuples,
-        topbuyers: topbuyers,
-        topratedsellers: topratedsellers,
-        topdelagents: topdelagents,
-        orders_per_year: orders_per_year,
-    });
 };
 
 exports.get_about = (req,res,next) => {
@@ -286,19 +329,93 @@ exports.post_add_delagent = (req,res,next) => {
 };
 
 exports.post_sort = (req,res,next) => {
-    return
+    arr = [];
+    db_session
+        .run("MATCH (p:product)-[:prod_sell]->(sl:seller)\
+        WITH apoc.text.levenshteinDistance($s, p.title)/(1.0+size(p.title)) as output1, p, sl\
+        WITH apoc.text.levenshteinDistance($s, p.description)/(1.0+size(p.description)) as output2, p, sl, output1\
+        WITH output1*2+output2*2+(5.0-p.rating)*1+(1.0/(p.num_rating+1))*10 as output, p, sl\
+        ORDER BY output\
+        RETURN p, sl.name limit 10\
+        union match (p:product)-[:prod_sell]->(sl:seller)\
+        where p.title contains $s return p, sl.name limit 10", {s: req.body.search})
+        .then(function(result){
+            result.records.forEach(element => {
+                properties = element.get('p').properties;
+                seller = element.get('sl.name');
+                arr.push(new example_base_prod(properties['id'], properties['title'], properties['img'], seller, properties['price'], properties['rating'].toFixed(2)));
+            });
+            res.render('admin/browse', {
+                pageTitle: 'Browse',
+                path: '/admin/browse',
+                editing: false,
+                prods: arr
+            });
+        });
 };
 
 exports.post_openup = (req,res,next) => {
-    // get the product_id;
-    // compute the corresponding "example_prod_long" object by quering using the prod id.
-    p = new example_base_prod();
-    p = new example_prod_long(p);
-    res.render('admin/productdetails', {
-        pageTitle: 'Product Details',
-        path: '/admin/productdetails',
-        editing: false,
-        // prods: result.rows
-        product: p
-    });
+    product = new example_prod_long();
+    pid = req.body.pid;
+    console.log('prod id = '+ pid);
+    db_session
+        .run("MATCH (p:product{id:$pid})-[:also_bought]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+        .then(function(result){
+            also_bought = [];
+            result.records.forEach(element => {
+                p = element.get('p2').properties;
+                seller = element.get('s.name');
+                also_bought.push(new example_base_prod(p['id'], p['title'], p['img'], seller, p['price'], p['rating'].toFixed(2)));
+            });
+            product.also_bought = also_bought;
+        }).then(() => {db_session
+            .run("MATCH (p:product{id:$pid})-[:also_viewed]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+            .then(function(result){
+                also_viewed = [];
+                result.records.forEach(element => {
+                    p = element.get('p2').properties;
+                    seller = element.get('s.name');
+                    also_viewed.push(new example_base_prod(p['id'], p['title'], p['img'], seller, p['price'], p['rating'].toFixed(2)));
+                });
+                product.also_viewed = also_viewed;
+            }).then(() => {db_session
+                .run("MATCH (p:product{id:$pid})-[:prod_sell]->(s:seller) return p, s.name", {pid: pid})
+                .then(function(result){
+                    p = result.records[0].get('p').properties;
+                    seller = result.records[0].get('s.name');
+                    console.log(p);
+                    product.id = pid;
+                    product.name = p['title'];
+                    product.image = p['img'];
+                    product.seller = seller;
+                    product.cost = p['price'];
+                    product.rating = p['rating'].toFixed(2);
+                    product.quantity = p['quantity'];
+                    product.description = p['description'];
+                }).then(() => {db_session
+                    .run("MATCH (p:product{id:$pid})-[:prod_cat]->(c:category) return c.name", {pid: pid})
+                    .then(function(result){
+                        cat = [];
+                        result.records.forEach(element => {
+                            cat.push(element.get('c.name'));
+                        });
+                        product.categories = cat;
+                    }).then(() => {db_session
+                        .run("MATCH (p:product{id:$pid})-[:prod_brand]->(b:brand) return b.name", {pid: pid})
+                        .then(function(result){
+                            if(result.records.length > 0){
+                                product.brand = result.records[0];
+                            }
+                            res.render('admin/productdetails', {
+                                pageTitle: 'Product Details',
+                                path: '/admin/productdetails',
+                                editing: false,
+                                product: product
+                            });
+                        });
+                    });
+                });
+            });
+        });
+
 };
