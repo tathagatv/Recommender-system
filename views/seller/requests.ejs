@@ -14,7 +14,7 @@
       <input type="submit" value="Submit"><br><br>
     </form>
 
-    <h1>Past Orders</h1>
+    <h1>Requested Orders</h1>
 
 
     <div class="penta-grid-container">
@@ -44,7 +44,8 @@
                 </div>
                 <div class="button">
                     <form action="/seller/ship" method="post">
-                        <input style="background-color: #FF8C00" value="<%= order.id %>" type="hidden" name="ship">
+                        <input type="hidden" value="<%= order.orderid %>" name="ship">
+                        <input type="submit" style="background-color: #FF8C00" value="Ship!" name="tp">
                     </form>
                 </div>
 

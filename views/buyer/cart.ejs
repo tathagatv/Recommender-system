@@ -46,6 +46,7 @@
                 <div class="button">
                     <form action="/buyer/removefromcart" method="post">
                         <input style="background-color: #FFCCCC" id="<%= product.id %>" type="submit" name="removefromcart" value="Remove From Cart" >
+                        <input value="<%= product.id %>" type="hidden" name="pid">
                     </form>
                 </div>
             </div>

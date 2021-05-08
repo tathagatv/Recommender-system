@@ -1,5 +1,8 @@
 const pool= require('../utils/database');
 const Prod = require('../models/prod');
+var JSAlert = require("js-alert");
+
+var randomstring = require("randomstring");
 
 class example_base_prod {
     constructor(id, name, image, seller, cost, rating){
@@ -162,12 +165,34 @@ exports.get_history = (req,res,next) => {
 };
 
 exports.post_sort = (req,res,next) => {
-    return;
+    arr = [];
+    db_session
+        .run("MATCH (p:product)-[:prod_sell]->(sl:seller)\
+        WITH apoc.text.levenshteinDistance($s, p.title)/(1.0+size(p.title)) as output1, p, sl\
+        WITH apoc.text.levenshteinDistance($s, p.description)/(1.0+size(p.description)) as output2, p, sl, output1\
+        WITH output1*2+output2*2+(5.0-p.rating)*1+(1.0/(p.num_rating+1))*10 as output, p, sl\
+        ORDER BY output\
+        RETURN p, sl.name limit 5\
+        union match (p:product)-[:prod_sell]->(sl:seller)\
+        where p.title contains $s return p, sl.name limit 10", {s: req.body.search})
+        .then(function(result){
+            result.records.forEach(element => {
+                properties = element.get('p').properties;
+                seller = element.get('sl.name');
+                arr.push(new example_base_prod(properties['id'], properties['title'], properties['img'], seller, properties['price'], properties['rating'].toFixed(2)));
+            });
+            res.render('buyer/browse', {
+                pageTitle: 'Browse',
+                path: '/buyer/browse',
+                editing: false,
+                prods: arr
+            });
+        });
 };
 
 exports.post_recharge = (req,res,next) => {
     db_session
-        .run("match (b:buyer{id:$id}) set b.money=$amount return b", {id: req.session.uid, amount: req.body.amount})
+        .run("match (b:buyer{id:$id}) set b.money=b.money+$amount return b", {id: req.session.uid, amount: parseInt(req.body.amount)})
         .then(function(result){
             properties = result.records[0].get('b').properties;
             u = new example_buyer(properties['id'], properties['name'], properties['address'], properties['contact'], properties['mail'], properties['money']);
@@ -181,7 +206,47 @@ exports.post_recharge = (req,res,next) => {
 };
 
 exports.post_placeorder = (req,res,next) => {
-    return;
+    db_session
+        .run("match (p:product)-[c:cart]->(b:buyer{id:$bid})\
+            return sum(p.price * c.quantity) as tc, b.money", {bid:req.session.uid})
+        .then(function(result) {
+            tc = result.records[0].get('tc');
+            money = result.records[0].get('b.money');
+            if (tc > money){
+                JSAlert.alert("Low on balance!");
+                res.redirect('/buyer/cart');
+            }else{
+                db_session
+                .run("MATCH (p:product)-[c:cart]->(b:buyer{id:$bid})\
+                set b.money = b.money - $tc\
+                create (o:order{timestamp:timestamp(), o_id:$oid, status:\"requested\", quantity:c.quantity}),\
+                (b)-[:buyer_order]->(o)-[:order_product]->(p)\
+                DELETE c with b, o\
+                MATCH (b)-[:buyer_order]->(o2:order)\
+                WHERE o.timestamp-o2.timestamp< 36000000 and o.timestamp-o2.timestamp > 1000\
+                MATCH (o2)-[:order_product]->(p2:product)\
+                MERGE (p)-[:also_bought]->(p2);", {bid: req.session.uid, oid:randomstring.generate(7), tc:tc})
+                .then(() => {
+                    arr = [];
+                    db_session
+                        .run("MATCH (:buyer{id:$id})-[:buyer_order]->(o:order)-[:order_product]->(p:product) return o.o_id, sum(o.quantity*p.price) as cost", {id: req.session.uid})
+                        .then(function(result){
+                            result.records.forEach(element => {
+                                o_id = element.get('o.o_id');
+                                cost = element.get('cost');
+                                arr.push(new example_order_short(o_id, cost.toFixed(2)));
+                            });
+                            res.render('buyer/history', {
+                                pageTitle: 'Past Orders',
+                                path: '/buyer/history',
+                                editing: false,
+                                orders: arr
+                            });
+                        });
+                });    
+            }
+        });
+    
 };
 
 exports.post_openup = (req,res,next) => {
@@ -227,16 +292,15 @@ exports.post_openup = (req,res,next) => {
                     .then(function(result){
                         cat = [];
                         result.records.forEach(element => {
-                            cat.push(element.get['c.name']);
+                            cat.push(element.get('c.name'));
                         });
-                        product.category = cat;
+                        product.categories = cat;
                     }).then(() => {db_session
                         .run("MATCH (p:product{id:$pid})-[:prod_brand]->(b:brand) return b.name", {pid: pid})
                         .then(function(result){
                             if(result.records.length > 0){
                                 product.brand = result.records[0];
                             }
-                            console.log(product);
                             res.render('buyer/productdetails', {
                                 pageTitle: 'Product Details',
                                 path: '/buyer/productdetails',
@@ -251,11 +315,14 @@ exports.post_openup = (req,res,next) => {
 };
 
 exports.post_orderdetails = (req,res,next) => {
-    // compute the corresponding "example_order_long" object by quering using the order id.
     arr = [];
     db_session
-        .run("MATCH (o:order{o_id:$o_id})-[:order_product]->(p:product)-[:prod_sell]->(s:seller),\
-         (o)-[:del_order]->(d:del_personnel) return s.name, p, o, d", {o_id: req.body.o_id})
+        .run("MATCH (o:order{o_id:$o_id, status:\"requested\"})-[:order_product]->(p:product)-[:prod_sell]->(s:seller)\
+         return s.name, p, o, null as d\
+         union\
+         MATCH (o:order{o_id:$o_id})-[:order_product]->(p:product)-[:prod_sell]->(s:seller),\
+         (o)<-[:del_order]-(d:del_personnel) return s.name, p, o, d\
+         ", {o_id: req.body.o_id})
         .then(function(result){
             result.records.forEach(element => {
                 order = element.get('o').properties;
@@ -266,8 +333,8 @@ exports.post_orderdetails = (req,res,next) => {
                 console.log(prod);
                 console.log(seller);
                 console.log(delagent);
-                arr.push(new example_prod_long(prod['id'], prod['title'], seller, prod['price'], order['status'], delagent['name'],
-                delagent['contact'], order['rating'], order['quantity']));
+                arr.push(new example_prod_long(prod['id'], prod['title'], "", seller, prod['price'], order['status'], delagent['name'],
+                delagent['contact'], order['rating'], "", order['quantity']));
             });
             res.render('buyer/orderdetails', {
                 pageTitle: 'Order Details',
@@ -279,9 +346,90 @@ exports.post_orderdetails = (req,res,next) => {
 };
 
 exports.post_removefromcart = (req,res,next) => {
-    return;
+    db_session
+        .run("MATCH (p:product{id:$pid}), (b:buyer{id:$bid}) match (p)-[c:cart]->(b)\
+        set p.quantity=p.quantity+c.quantity delete c;",
+        {bid: req.session.uid, pid: req.body.pid})
+        .then(() => {
+            arr = [];
+            db_session
+                .run("match (p:product)-[c:cart]->(b:buyer{id:$id}), (p)-[:prod_sell]->(s:seller) return p, s.name, c.quantity", {id: req.session.uid})
+                .then(function(result){
+                    result.records.forEach(element => {
+                        properties = element.get('p').properties;
+                        seller = element.get('s.name');
+                        qty = element.get('c.quantity');
+                        arr.push(new example_cart_item(properties['id'], properties['title'], properties['img'], seller, properties['price'], properties['rating'].toFixed(2), qty));
+                    });
+                    res.render('buyer/cart', {
+                        pageTitle: 'Cart',
+                        path: '/buyer/cart',
+                        editing: false,
+                        cart: new example_cart(req.session.uid, arr)
+                    });
+                });
+        });
 };
 
 exports.post_addtocart = (req,res,next) => {
-    return;
+    db_session
+        .run("MATCH (p:product{id:$pid}), (b:buyer{id:$bid}) MERGE (p)-[c:cart]->(b)\
+        ON CREATE SET c.quantity=$qty ON MATCH SET c.quantity=c.quantity + $qty set p.quantity=p.quantity-$qty;",
+        {bid: req.session.uid, qty: parseInt(req.body.addtocart), pid: req.body.pid})
+        .then(() => {
+            arr = [];
+            db_session
+                .run("match (p:product)-[c:cart]->(b:buyer{id:$id}), (p)-[:prod_sell]->(s:seller) return p, s.name, c.quantity", {id: req.session.uid})
+                .then(function(result){
+                    result.records.forEach(element => {
+                        properties = element.get('p').properties;
+                        seller = element.get('s.name');
+                        qty = element.get('c.quantity');
+                        arr.push(new example_cart_item(properties['id'], properties['title'], properties['img'], seller, properties['price'], properties['rating'].toFixed(2), qty));
+                    });
+                    res.render('buyer/cart', {
+                        pageTitle: 'Cart',
+                        path: '/buyer/cart',
+                        editing: false,
+                        cart: new example_cart(req.session.uid, arr)
+                    });
+                });
+        });
+};
+
+exports.post_rating = (req,res,next) => {
+    db_session
+        .run("MATCH (o:order{o_id:$oid})-[:order_product]->(p:product{id:$pid})\
+        SET o.rating=$rating set p.rating = (p.rating*p.num_rating + $rating)/(p.num_rating+1) set p.num_rating=p.num_rating+1;",
+        {oid: req.body.o_id, rating: parseInt(req.body.rating), pid: req.body.pid})
+        .then(() => {
+            arr = [];
+            db_session
+                .run("MATCH (o:order{o_id:$o_id, status:\"requested\"})-[:order_product]->(p:product)-[:prod_sell]->(s:seller)\
+                return s.name, p, o, null as d\
+                union\
+                MATCH (o:order{o_id:$o_id})-[:order_product]->(p:product)-[:prod_sell]->(s:seller),\
+                (o)<-[:del_order]-(d:del_personnel) return s.name, p, o, d\
+                ", {o_id: req.body.o_id})
+                .then(function(result){
+                    result.records.forEach(element => {
+                        order = element.get('o').properties;
+                        prod = element.get('p').properties;
+                        seller = element.get('s.name');
+                        delagent = element.get('d').properties;
+                        console.log(order);
+                        console.log(prod);
+                        console.log(seller);
+                        console.log(delagent);
+                        arr.push(new example_prod_long(prod['id'], prod['title'], "", seller, prod['price'], order['status'], delagent['name'],
+                        delagent['contact'], order['rating'], "", order['quantity']));
+                    });
+                    res.render('buyer/orderdetails', {
+                        pageTitle: 'Order Details',
+                        path: '/buyer/orderdetails',
+                        editing: false,
+                        order: new example_order_long(req.body.o_id, req.body.totalcost, arr)
+                    });
+                });
+        });
 };

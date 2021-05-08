@@ -160,7 +160,7 @@
   '. . . . button';
   grid-gap: 5px;
   padding: 5px;
-  height: 300px
+  height: auto;
   width: auto;
   text-align: center;
 }
@@ -179,7 +179,7 @@
   'cost cost cost cost cost';
   grid-gap: 5px;
   padding: 5px;
-  height: 300px
+  height: 300px;
   width: auto;
   text-align: center;
 }

@@ -51,7 +51,10 @@
                     <td>
                         <form action="/buyer/rating", method="post">
                           <label for="rating">Rating:</label>
-                          <input type="number" id="rating" min="1" max="5" name="rating" placeholder="<%= rating %>">
+                          <input type="number" id="rating" min="1" max="5" name="rating" placeholder="<%= rating %>" required>
+                          <input type="hidden" value="<%= order.product_list[j].id %>" name="pid">
+                          <input type="hidden" value="<%= order.totalcost %>" name="totalcost">
+                          <input type="hidden" value="<%= order.orderid %>" name="o_id">
                           <input type="submit" value="Update Rating!" style="color: #FF8C00">
                         </form>
                     </td>

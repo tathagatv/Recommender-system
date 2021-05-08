@@ -1,15 +1,6 @@
 const pool= require('../utils/database');
 const Prod = require('../models/prod');
 
-/*class example_order {
-    constructor(name, address, contact, mail){
-        this.orderid = 1;
-        this.customer_address = "Shaitan Gali, Khatra Mahal, Shamshaan ke Samne";
-        this.customer_contact = "999998888222";
-        this.cost = "432";
-    }
-}*/
-
 class order {
     constructor(id, address, contact, tc){
         this.orderid = id;
@@ -28,8 +19,8 @@ class order2 {
 
 exports.get_ongoing = (req,res,next) => {
     db_session
-        .run("match (d:del_personnel{id:$id})-[:del_order]->(o:order{status:\"shipped\"}) match (p:product)-[:order_product]->(o) \
-              match (b:buyer)-[:order_buyer]->(o) with o.id as id,b,sum(o.quantity*p.price) as tc return id,tc,b.address,b.contact",{id: 1})
+        .run("match (d:del_personnel{id:$id})-[:del_order]->(o:order{status:\"shipped\"}) match (p:product)<-[:order_product]-(o) \
+              match (b:buyer)-[:buyer_order]->(o) with o.o_id as id,b,sum(o.quantity*p.price) as tc return id,tc,b.address,b.contact",{id: req.session.uid})
         .then(function(result){
             arr=[];
             for (i=0;i<result.records.length;i++){
@@ -43,7 +34,6 @@ exports.get_ongoing = (req,res,next) => {
                 pageTitle: 'Ongoing Orders',
                 path: '/delagent/ongoing',
                 editing: false,
-                // prods: result.rows
                 orders: arr
             });
         });
@@ -51,8 +41,8 @@ exports.get_ongoing = (req,res,next) => {
 
 exports.get_delivered = (req,res,next) => {
     db_session
-        .run("match (d:del_personnel{id:$id})-[:del_order]->(o:order{status:\"delivered\"}) match (p:product)-[:order_product]->(o) \
-              with o.id as id,sum(o.quantity*p.price) as tc return id,tc",{id: 1})
+        .run("match (d:del_personnel{id:$id})-[:del_order]->(o:order{status:\"delivered\"}) match (p:product)<-[:order_product]-(o) \
+              with o.o_id as id,sum(o.quantity*p.price) as tc return id,tc",{id: req.session.uid})
         .then(function(result){
             arr=[];
             for (i=0;i<result.records.length;i++){
@@ -64,7 +54,6 @@ exports.get_delivered = (req,res,next) => {
                 pageTitle: 'Cart',
                 path: '/delagent/delivered',
                 editing: false,
-                // prods: result.rows
                 orders: arr
             });
         });
@@ -75,7 +64,6 @@ exports.get_about = (req,res,next) => {
         pageTitle: 'About',
         path: '/delagent/about',
         editing: false,
-        // prods: result.rows
     });
 };
 
@@ -86,12 +74,12 @@ exports.post_sort = (req,res,next) => {
 exports.post_setasdelivered = (req,res,next) => {
     var oid = req.body.setasdelivered;
     db_session
-        .run("match (d:del_personnel{id:$id})-[:del_order]->(o:order{id:oid,status:\"shipped\"}) \
+        .run("match (d:del_personnel{id:$id})-[:del_order]->(o:order{o_id:$o_id,status:\"shipped\"}) \
               set o.status=\"delivered\"\
               set d.active=d.active-1\
-              set d.delivered=d.delivered+1",{id:1,o_id:oid})
+              set d.delivered=d.delivered+1",{id:req.session.uid,o_id:oid})
         .then(function(result){
-            res.redirect('/seller/delivered');
+            res.redirect('/delagent/delivered');
         });
     return;
 };

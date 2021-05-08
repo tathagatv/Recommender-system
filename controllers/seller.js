@@ -1,44 +1,14 @@
 const pool= require('../utils/database');
 const Prod = require('../models/prod');
-var prod_id_cnt=1;
-/*class example_base_prod {
-    constructor(name, image, seller, cost, rating, category){
-        this.id = 1;
-        this.name = "BG";
-        this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
-        this.seller = "Tathagat";
-        this.cost = 150;
-        this.rating = 5;
-        this.categories = ["Elec", "CS", "Meta", "Chem"];
-    }
-}
+var randomstring = require("randomstring");
 
-class example_prod_long {
-    constructor(p){
-        this.id = 1;
-        this.name = "BG";
-        this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
-        this.seller = "Tathagat";
-        this.cost = 150;
-        this.status = "Shipped"
-        this.delagent = "ABCD";
-        this.delcontact = "9876543210";
-        this.rating = 5;
-        this.categories = ["Elec", "CS", "Meta", "Chem"];
-        this.quantity = 10;
-        this.brand = "Apple";
-        this.description = "Alienware! Best Gaming Laptop in the Market today! 16 GB GPU, 32GB RAM, liquid display.";
-        this.also_viewed = [p,p,p,p,p,p] // top 6
-        this.also_bought = [p,p,p,p] // top 6
-    }
-}*/
 class base_prod{
     constructor(id,name, image, cost, rating, quantity, description){
         this.id = id;
         this.name = name;
         this.image = image;
         this.cost = cost;
-        this.rating = rating;
+        this.rating = rating.toFixed(2);
         this.quantity = quantity;
         this.description = description;
     }
@@ -46,18 +16,6 @@ class base_prod{
 function prod(rec){
     return new base_prod(rec['id'],rec['title'],rec['img'],rec['price'],rec['rating'],rec['quantity'],rec['description']);
 }
-
-/*
-class example_past_order {
-    constructor(){
-        this.orderid = 1;
-        this.productlist = ["laptop", "Grinder", "AK47", "nail cutter", "jello"];
-        this.quantitylist = [1,2,743,1,8]
-        this.costlist = [44000, 1400, 8930, 23, 65]
-        this.totalcost = 88654;
-        this.buyer = "Taliban";
-    }
-}*/
 
 class past_order {
     constructor(oid,pl,ql,cl,tc,buyer){
@@ -81,7 +39,7 @@ class example_admin_seller {
 
 exports.get_onsale = (req,res,next) => {
     db_session
-        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) return p",{id: 1})
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) return p",{id: req.session.uid})
         .then(function(result){
             arr=[];
             for (i=0;i<result.records.length;i++){
@@ -102,26 +60,24 @@ exports.get_about = (req,res,next) => {
         pageTitle: 'About',
         path: '/seller/about',
         editing: false,
-        // prods: result.rows
         prods: arr
     });
 };
 
 exports.get_addnew = (req,res,next) => {
-    arr = []
+    arr = [];
     res.render('seller/addnew', {
         pageTitle: 'Add New',
         path: '/seller/addnew',
         editing: false,
-        // prods: result.rows
         prods: arr
     });
 };
 
 exports.get_past = (req,res,next) => {
     db_session
-        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)-[:order_product]->(o:order{status:\"delivered\"})\
-              match (b:buyer)-[:buyer_order]->(o) return o.id,b.name,p,o.quantity order by o.id",{id: 1})
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)<-[:order_product]-(o:order{status:\"delivered\"})\
+              match (b:buyer)-[:buyer_order]->(o) return o.o_id,b.name,p,o.quantity order by o.o_id",{id: req.session.uid})
         .then(function(result){
             arr=[];
             pl=[];
@@ -130,7 +86,7 @@ exports.get_past = (req,res,next) => {
             tc=0;
             var loid=-1;
             for (i=0;i<result.records.length;i++){
-                oid=result.records[i].get('o.id');
+                oid=result.records[i].get('o.o_id');
                 prop=result.records[i].get('p').properties;
                 qty=result.records[i].get('o.quantity');
                 buyer=result.records[i].get('b.name');
@@ -159,7 +115,6 @@ exports.get_past = (req,res,next) => {
                 pageTitle: 'Past Orders',
                 path: '/seller/past',
                 editing: false,
-                // prods: result.rows
                 orders: arr
             });
         });
@@ -167,8 +122,8 @@ exports.get_past = (req,res,next) => {
 
 exports.get_requests = (req,res,next) => {
     db_session
-        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)-[:order_product]->(o:order{status:\"requested\"})\
-              match (b:buyer)-[:buyer_order]->(o) return o.id,b.name,p,o.quantity order by o.id",{id: 1})
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)<-[:order_product]-(o:order{status:\"requested\"})\
+              match (b:buyer)-[:buyer_order]->(o) return o.o_id,b.name,p,o.quantity order by o.o_id",{id: req.session.uid})
         .then(function(result){
             arr=[];
             pl=[];
@@ -177,7 +132,7 @@ exports.get_requests = (req,res,next) => {
             tc=0;
             var loid=-1;
             for (i=0;i<result.records.length;i++){
-                oid=result.records[i].get('o.id');
+                oid=result.records[i].get('o.o_id');
                 prop=result.records[i].get('p').properties;
                 qty=result.records[i].get('o.quantity');
                 buyer=result.records[i].get('b.name');
@@ -190,7 +145,7 @@ exports.get_requests = (req,res,next) => {
                     if(i===0){
                         //do nothing
                     }else{
-                        arr.push(new past_order(oid,pl,ql,cl,tc,buyer));
+                        arr.push(new past_order(loid,pl,ql,cl,tc,buyer));
                     }
                     pl=[prop['title']];
                     ql=[qty];
@@ -206,7 +161,6 @@ exports.get_requests = (req,res,next) => {
                 pageTitle: 'Order Requests',
                 path: '/seller/requests',
                 editing: false,
-                // prods: result.rows
                 orders: arr
             });
         });
@@ -214,8 +168,8 @@ exports.get_requests = (req,res,next) => {
 
 exports.get_ongoing = (req,res,next) => {
     db_session
-        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)-[:order_product]->(o:order{status:\"shipped\"})\
-              match (b:buyer)-[:buyer_order]->(o) return o.id,b.name,p,o.quantity order by o.id",{id: 1})
+        .run("match (p:product)-[:prod_sell]->(s:seller{id: $id}) match (p)<-[:order_product]-(o:order{status:\"shipped\"})\
+              match (b:buyer)-[:buyer_order]->(o) return o.o_id,b.name,p,o.quantity order by o.o_id",{id: req.session.uid})
         .then(function(result){
             arr=[];
             pl=[];
@@ -224,7 +178,7 @@ exports.get_ongoing = (req,res,next) => {
             tc=0;
             var loid=-1;
             for (i=0;i<result.records.length;i++){
-                oid=result.records[i].get('o.id');
+                oid=result.records[i].get('o.o_id');
                 prop=result.records[i].get('p').properties;
                 qty=result.records[i].get('o.quantity');
                 buyer=result.records[i].get('b.name');
@@ -253,41 +207,130 @@ exports.get_ongoing = (req,res,next) => {
                 pageTitle: 'Ongoing Orders',
                 path: '/seller/ongoing',
                 editing: false,
-                // prods: result.rows
                 orders: arr
             });
         });
 };
 
-exports.post_sort = (req,res,next) => {
-    return;
+exports.post_addnew = (req, res, next) => {
+    var name= req.body.pname;
+    var price= req.body.cost;
+    var brand= req.body.brand;
+    var category= req.body.category;
+    var description= req.body.description;
+    var quantity= req.body.quantity;
+    var image= req.body.image;
+    db_session
+        .run("merge (p:product{id:$id, price:$pr, description:$dr, quantity:$qu, img:$im, \
+        title:$na, rating:2.5, num_rating:1}) merge (c:category{name:$ca}) merge (b:brand{name:$br})\
+        with p,c,b match (s:seller{id:$id1})\
+        create (p)-[:prod_cat]->(c) create (p)-[:prod_brand]->(b) create (p)-[:prod_sell]->(s)",
+        {id:randomstring.generate(7), pr:price, dr:description, qu:quantity, im:image, na:name,
+        ca:category, br:brand, id1:req.session.uid})
+        .then(function(result){
+            res.redirect('/seller/onsale');
+        });
 };
 
-exports.post_addnew = (req,res,next) => {
-    var oid = req.body.ship;
+exports.post_sort = (req,res,next) => {
+    arr = [];
     db_session
-        .run("match (p:product)-[:prod_sell]->(s:seller{id:$id}) match (p)-[:order_product]->(o:order{id:$o_id,status:\"requested\"}) set o.status=\"shipped\" \
-              with o match (d:del_personnel) with d,min(d.active) as m1 create (d)-[:del_order]->(o) set d.active=d.active+1",{id:1,o_id:oid})
+        .run("MATCH (p:product)-[:prod_sell]->(sl:seller)\
+        WITH apoc.text.levenshteinDistance($s, p.title)/(1.0+size(p.title)) as output1, p, sl\
+        WITH apoc.text.levenshteinDistance($s, p.description)/(1.0+size(p.description)) as output2, p, sl, output1\
+        WITH output1*2+output2*2+(5.0-p.rating)*1+(1.0/(p.num_rating+1))*10 as output, p, sl\
+        ORDER BY output\
+        RETURN p, sl.name limit 5\
+        union match (p:product)-[:prod_sell]->(sl:seller)\
+        where p.title contains $s return p, sl.name limit 10", {s: req.body.search})
+        .then(function(result){
+            result.records.forEach(element => {
+                properties = element.get('p').properties;
+                seller = element.get('sl.name');
+                arr.push(new base_prod(properties['id'], properties['title'], properties['img'], properties['price'], properties['rating'], properties['quantity']));
+            });
+            res.render('seller/onsale', {
+                pageTitle: 'On sale',
+                path: '/seller/onsale',
+                editing: false,
+                prods: arr
+            });
+        });
+};
+exports.post_ship = (req,res,next) => {
+    var oid = req.body.ship;
+    console.log(oid);
+    db_session
+        .run("match (p:product)-[:prod_sell]->(s:seller{id:$id}) match (p)<-[:order_product]-(o:order{o_id:$o_id,status:\"requested\"}) set o.status=\"shipped\" \
+              with o match (d:del_personnel) with d, o, min(d.active) as m1 create (d)-[:del_order]->(o) set d.active=d.active+1",{id:req.session.uid,o_id:oid})
         .then(function(result){
             res.redirect('/seller/ongoing');
         });
 };
 
-exports.post_ship = (req,res,next) => {
-
-    return;
-};
-
 exports.post_openup = (req,res,next) => {
-    // get the product_id;
-    // compute the corresponding "example_prod_long" object by quering using the prod id.
+    product = new example_prod_long();
+    pid = req.body.pid;
+    console.log('prod id = '+ pid);
+    db_session
+        .run("MATCH (p:product{id:$pid})-[:also_bought]->(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+        .then(function(result){
+            also_bought = [];
+            result.records.forEach(element => {
+                p = element.get('p2').properties;
+                seller = element.get('s.name');
+                also_bought.push(new example_base_prod(p['id'], p['title'], p['img'], seller, p['price'], p['rating'].toFixed(2)));
+            });
+            product.also_bought = also_bought;
+        }).then(() => {db_session
+            .run("MATCH (p:product{id:$pid})-[:also_viewed]->(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+            .then(function(result){
+                also_viewed = [];
+                result.records.forEach(element => {
+                    p = element.get('p2').properties;
+                    seller = element.get('s.name');
+                    also_viewed.push(new example_base_prod(p['id'], p['title'], p['img'], seller, p['price'], p['rating'].toFixed(2)));
+                });
+                product.also_viewed = also_viewed;
+            }).then(() => {db_session
+                .run("MATCH (p:product{id:$pid})-[:prod_sell]->(s:seller) return p, s.name", {pid: pid})
+                .then(function(result){
+                    p = result.records[0].get('p').properties;
+                    seller = result.records[0].get('s.name');
+                    console.log(p);
+                    product.id = pid;
+                    product.name = p['title'];
+                    product.image = p['img'];
+                    product.seller = seller;
+                    product.cost = p['price'];
+                    product.rating = p['rating'].toFixed(2);
+                    product.quantity = p['quantity'];
+                    product.description = p['description'];
+                }).then(() => {db_session
+                    .run("MATCH (p:product{id:$pid})-[:prod_cat]->(c:category) return c.name", {pid: pid})
+                    .then(function(result){
+                        cat = [];
+                        result.records.forEach(element => {
+                            cat.push(element.get('c.name'));
+                        });
+                        product.categories = cat;
+                    }).then(() => {db_session
+                        .run("MATCH (p:product{id:$pid})-[:prod_brand]->(b:brand) return b.name", {pid: pid})
+                        .then(function(result){
+                            if(result.records.length > 0){
+                                product.brand = result.records[0];
+                            }
+                            res.render('seller/productdetails', {
+                                pageTitle: 'Product Details',
+                                path: '/seller/productdetails',
+                                editing: false,
+                                product: product
+                            });
+                        });
+                    });
+                });
+            });
+        });
     p = new example_base_prod();
     p = new example_prod_long(p);
-    res.render('seller/productdetails', {
-        pageTitle: 'Product Details',
-        path: '/seller/productdetails',
-        editing: false,
-        // prods: result.rows
-        product: p
-    });
 };

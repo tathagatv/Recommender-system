@@ -1,37 +1,6 @@
 const Prod = require('../models/prod');
 var sel_id_cnt=2;
 var del_id_cnt=2;
-/*class example_base_prod {
-    constructor(){
-        this.id = 1;
-        this.name = "BG";
-        this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
-        this.seller = "Tathagat";
-        this.cost = 150;
-        this.rating = 5;
-        this.categories = ["Elec", "CS", "Meta", "Chem"];
-    }
-}
-
-class example_prod_long {
-    constructor(p){
-        this.id = 1;
-        this.name = "BG";
-        this.image = "https://www.cse.iitb.ac.in/~bhaskargupta/def.jpeg";
-        this.seller = "Tathagat";
-        this.cost = 150;
-        this.status = "Shipped"
-        this.delagent = "ABCD";
-        this.delcontact = "9876543210";
-        this.rating = 5;
-        this.categories = ["Elec", "CS", "Meta", "Chem"];
-        this.quantity = 10;
-        this.brand = "Apple";
-        this.description = "Alienware! Best Gaming Laptop in the Market today! 16 GB GPU, 32GB RAM, liquid display.";
-        this.also_viewed = [p,p,p,p,p,p] // top 6
-        this.also_bought = [p,p,p,p] // top 6
-    }
-}*/
 
 class base_prod{
     constructor(id,name, image, cost, seller, rating, quantity, description){
@@ -49,17 +18,6 @@ class base_prod{
 function prod_p(rec,seller){
     return new base_prod(rec['id'],rec['title'],rec['img'],rec['price'], seller, rec['rating'],rec['quantity'],rec['description']);
 }
-
-/*class example_buyer {
-    constructor(name, address, contact, mail){
-        this.id = 1;
-        this.name = "Dolly";
-        this.address = "Shaitan Gali, Khatra Mahal, Shamshaan ke Samne";
-        this.contact = "8881212";
-        this.mail = "dololol@gmail.com";
-        this.balance = 210983;
-    }
-}*/
 
 class buyer {
     constructor(id,name, address, contact, mail,balance){
@@ -227,18 +185,17 @@ exports.get_analytics = (req,res,next) => {
         ['Bhaskar', 2],
         ];
     var topratedsellers = [
-        ['SNiraj', 4.4, 330],
-        ['SShivam', 4.3, 130],
-        ['STathagat', 4.2, 31],
-        ['SBhaskar', 0.2, 33],
-        ]
+        ['SNiraj', 330],
+        ['SShivam', 130],
+        ['STathagat', 31],
+        ['SBhaskar', 33],
+        ];
     var topdelagents = [
         ['DNiraj', 76],
         ['DShivam', 32],
         ['DTathagat', 12],
         ['DBhaskar', 4],
-        ]
-
+        ];
     var orders_per_year = [
         [2004,  0.1],
         [2005,  0.16],
@@ -257,7 +214,21 @@ exports.get_analytics = (req,res,next) => {
         [2018,  15.81],
         [2019,  25.91],
         [2020,  32.11],
-      ]
+      ];
+    db_session
+      .run("match (o:order) return o.timestamp/31540000000+1970 as yr, count(*) as fr")
+      .then(function(result){
+        //   result.records --> orders_per_year
+        db_session
+            .run("match (b:buyer)-[:buyer_order]->(o:order) with b.name as bn, count(*) as cnt return bn, cnt\
+            order by cnt desc limit 4") // for top buyers
+            .then(() => {
+                db_session
+                    .run("match (o:order)-[:order_product]->(p:product)-[:prod_sell]->(s:seller)\
+                    return s.name, count(*) cnt order by cnt desc limit 4") // for top sellers
+                    .then();
+            });
+      });
 
     res.render('admin/analytics', {
         pageTitle: 'Analytics',

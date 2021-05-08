@@ -39,10 +39,11 @@
                       <label for="addtocart">Quantity:</label>
                       <input type="number" id="addtocart" name="addtocart" min="1" max="<%= product.quantity %>" placeholder="1-<%= product.quantity %>">
                       <input type="submit" value="Add to Cart!" style="color: #FF8C00">
+                      <input type="hidden" value="<%= product.id %>" name="pid">
                     </form>
                 </div>
             <div class="customtxt">
-                Rating: <br>
+                Description: <br>
                 <textarea readonly rows="6" cols="130">
                      <%= product.description %>
                 </textarea>
