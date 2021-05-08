@@ -425,9 +425,16 @@ exports.post_rating = (req,res,next) => {
                         order = element.get('o').properties;
                         prod = element.get('p').properties;
                         seller = element.get('s.name');
-                        delagent = element.get('d').properties;
-                        arr.push(new example_prod_long(prod['id'], prod['title'], "", seller, prod['price'], order['status'], delagent['name'],
-                        delagent['contact'], order['rating'], "", order['quantity']));
+                        var del_name, del_contact;
+                        if (element.get('d') == null){
+                            del_name= '-';
+                            del_contact = '-';
+                        }else{
+                            del_name= element.get('d').properties['name'];
+                            del_contact = element.get('d').properties['contact'];
+                        }
+                        arr.push(new example_prod_long(prod['id'], prod['title'], "", seller, prod['price'], order['status'], del_name,
+                        del_contact, order['rating'], "", order['quantity']));
                     });
                     res.render('buyer/orderdetails', {
                         pageTitle: 'Order Details',
