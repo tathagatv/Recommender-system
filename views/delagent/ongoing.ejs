@@ -38,7 +38,8 @@
                 </div>
                 <div class="button">
                     <form action="/delagent/setasdelivered" method="post">
-                        <input style="background-color: #FF8C00" type="hidden" name="setasdelivered" value="<%= order.orderid %>" >
+                        <input type="hidden" value="<%= order.orderid %>" name="setasdelivered">
+                        <input type="submit" style="background-color: #FF8C00" name="tp" value="Mark as delivered" >
                     </form>
                 </div>
             </div>

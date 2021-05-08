@@ -19,5 +19,6 @@ router.post('/recharge', buyerCon.post_recharge);
 router.post('/orderdetails', buyerCon.post_orderdetails);
 router.post('/removefromcart', buyerCon.post_removefromcart);
 router.post('/addtocart', buyerCon.post_addtocart);
+router.post('/rating', buyerCon.post_rating);
 
 module.exports = router;
