@@ -173,7 +173,7 @@ exports.post_sort = (req,res,next) => {
         ORDER BY output\
         RETURN p, sl.name limit 10\
         union match (p:product)-[:prod_sell]->(sl:seller)\
-        where p.title contains $s return p, sl.name limit 10", {s: req.body.search})
+        where toLower(p.title) contains toLower($s) return p, sl.name limit 10", {s: req.body.search})
         .then(function(result){
             result.records.forEach(element => {
                 properties = element.get('p').properties;
