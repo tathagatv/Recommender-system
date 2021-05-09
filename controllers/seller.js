@@ -289,7 +289,7 @@ exports.post_addnew = (req, res, next) => {
     var image= req.body.image;
     db_session
         .run("merge (p:product{id:$id, price:$pr, description:$dr, quantity:$qu, img:$im, \
-        title:$na, rating:2.5, num_rating:1}) merge (c:category{name:$ca}) merge (b:brand{name:$br})\
+        title:$na, rating:5.0, num_rating:1}) merge (c:category{name:$ca}) merge (b:brand{name:$br})\
         with p,c,b match (s:seller{id:$id1})\
         create (p)-[:prod_cat]->(c) create (p)-[:prod_brand]->(b) create (p)-[:prod_sell]->(s)",
         {id:randomstring.generate(7), pr:price, dr:description, qu:quantity, im:image, na:name,
@@ -309,7 +309,7 @@ exports.post_sort = (req,res,next) => {
         ORDER BY output\
         RETURN p, sl.name limit 5\
         union match (p:product)-[:prod_sell]->(sl:seller{id:$sid})\
-        where p.title contains $s return p, sl.name limit 10", {s: req.body.search, sid: req.session.uid})
+        where toLower(p.title) contains toLower($s) return p, sl.name limit 10", {s: req.body.search, sid: req.session.uid})
         .then(function(result){
             result.records.forEach(element => {
                 properties = element.get('p').properties;

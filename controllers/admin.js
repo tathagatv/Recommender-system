@@ -241,6 +241,7 @@ exports.get_analytics = (req,res,next) => {
             .then(() => {
                 db_session
                     .run("match (o:order)-[:order_product]->(p:product)-[:prod_sell]->(s:seller)\
+                    where o.status <> \"requested\"\
                     return s.name, count(*) as cnt order by cnt desc limit 4") // for top sellers
                     .then(function(result) {
                         topratedsellers = [];
@@ -333,7 +334,7 @@ exports.post_sort = (req,res,next) => {
         ORDER BY output\
         RETURN p, sl.name limit 10\
         union match (p:product)-[:prod_sell]->(sl:seller)\
-        where p.title contains $s return p, sl.name limit 10", {s: req.body.search})
+        where toLower(p.title) contains toLower($s) return p, sl.name limit 10", {s: req.body.search})
         .then(function(result){
             result.records.forEach(element => {
                 properties = element.get('p').properties;
