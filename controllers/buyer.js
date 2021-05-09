@@ -205,6 +205,7 @@ exports.post_recharge = (req,res,next) => {
 };
 
 exports.post_placeorder = (req,res,next) => {
+    var oid = randomstring.generate(7);
     db_session
         .run("match (p:product)-[c:cart]->(b:buyer{id:$bid})\
             return sum(p.price * c.quantity) as tc, b.money", {bid:req.session.uid})
@@ -216,32 +217,37 @@ exports.post_placeorder = (req,res,next) => {
             }else{
                 db_session
                 .run("MATCH (p:product)-[c:cart]->(b:buyer{id:$bid})\
-                set b.money = b.money - $tc\
-                create (o:order{timestamp:timestamp(), o_id:$oid, status:\"requested\", quantity:c.quantity}),\
-                (b)-[:buyer_order]->(o)-[:order_product]->(p)\
-                DELETE c with b, o\
-                MATCH (b)-[:buyer_order]->(o2:order)\
-                WHERE o.timestamp-o2.timestamp< 36000000 and o.timestamp-o2.timestamp > 1000\
-                MATCH (o2)-[:order_product]->(p2:product)\
-                MERGE (p)-[:also_bought]->(p2);", {bid: req.session.uid, oid:randomstring.generate(7), tc:tc})
+                    set b.money = b.money - $tc\
+                    create (o:order{timestamp:timestamp(), o_id:$oid, status:\"requested\", quantity:c.quantity}),\
+                    (b)-[:buyer_order]->(o)-[:order_product]->(p)\
+                    DELETE c;", {bid: req.session.uid, oid:oid, tc:tc})
                 .then(() => {
-                    arr = [];
                     db_session
-                        .run("MATCH (:buyer{id:$id})-[:buyer_order]->(o:order)-[:order_product]->(p:product) return o.o_id, sum(o.quantity*p.price) as cost", {id: req.session.uid})
-                        .then(function(result){
-                            result.records.forEach(element => {
-                                o_id = element.get('o.o_id');
-                                cost = element.get('cost');
-                                arr.push(new example_order_short(o_id, cost.toFixed(2)));
-                            });
-                            res.render('buyer/history', {
-                                pageTitle: 'Past Orders',
-                                path: '/buyer/history',
-                                editing: false,
-                                orders: arr
-                            });
+                        .run("match (b:buyer{id:$bid}), \
+                            (b)-[:buyer_order]->(o1:order{o_id:$oid})-[:order_product]->(p1:product), \
+                            (b)-[:buyer_order]->(o2:order)-[:order_product]->(p2:product)\
+                            where o1.timestamp-o2.timestamp< 36000000 and o1.timestamp-o2.timestamp > 1000\
+                            and p1.id <> p2.id\
+                            MERGE (p1)<-[:also_bought]-(p2)", {bid: req.session.uid, oid:oid})
+                        .then(() => {
+                            arr = [];
+                            db_session
+                                .run("MATCH (:buyer{id:$id})-[:buyer_order]->(o:order)-[:order_product]->(p:product) return o.o_id, sum(o.quantity*p.price) as cost", {id: req.session.uid})
+                                .then(function(result){
+                                    result.records.forEach(element => {
+                                        o_id = element.get('o.o_id');
+                                        cost = element.get('cost');
+                                        arr.push(new example_order_short(o_id, cost.toFixed(2)));
+                                    });
+                                    res.render('buyer/history', {
+                                        pageTitle: 'Past Orders',
+                                        path: '/buyer/history',
+                                        editing: false,
+                                        orders: arr
+                                    });
+                                });
                         });
-                });    
+                });
             }
         });
     
@@ -250,9 +256,8 @@ exports.post_placeorder = (req,res,next) => {
 exports.post_openup = (req,res,next) => {
     product = new example_prod_long();
     pid = req.body.pid;
-    console.log('prod id = '+ pid);
     db_session
-        .run("MATCH (p:product{id:$pid})-[:also_bought]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+        .run("MATCH (p:product{id:$pid})-[:also_bought]-(p2:product)-[:prod_sell]->(s:seller) return distinct p2, s.name", {pid: pid})
         .then(function(result){
             also_bought = [];
             result.records.forEach(element => {
@@ -262,7 +267,7 @@ exports.post_openup = (req,res,next) => {
             });
             product.also_bought = also_bought;
         }).then(() => {db_session
-            .run("MATCH (p:product{id:$pid})-[:also_viewed]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+            .run("MATCH (p:product{id:$pid})-[:also_viewed]-(p2:product)-[:prod_sell]->(s:seller) return distinct p2, s.name", {pid: pid})
             .then(function(result){
                 also_viewed = [];
                 result.records.forEach(element => {
@@ -276,7 +281,6 @@ exports.post_openup = (req,res,next) => {
                 .then(function(result){
                     p = result.records[0].get('p').properties;
                     seller = result.records[0].get('s.name');
-                    console.log(p);
                     product.id = pid;
                     product.name = p['title'];
                     product.image = p['img'];
@@ -299,20 +303,27 @@ exports.post_openup = (req,res,next) => {
                             if(result.records.length > 0){
                                 product.brand = result.records[0];
                             }
+                        }).then(() => {
                             db_session
-                            .run("MATCH (p3:product)-[v:view_history]->(b:buyer{id:$b1}), (p:product {id:$p1})\
-                                WHERE timestamp()-v.timestamp < 600000 and p3.id <> p.id\
-                                merge (p)-[:also_viewed]->(p3)\
+                            .run("MATCH (b:buyer{id:$b1}), (p:product {id:$p1})\
                                 create (p)-[:view_history{timestamp:timestamp()}]->(b);",
                                 {b1:req.session.uid, p1: pid})
-                            .then(() => {
-                                res.render('buyer/productdetails', {
-                                    pageTitle: 'Product Details',
-                                    path: '/buyer/productdetails',
-                                    editing: false,
-                                    product: product
+                            .then(function(result){
+                                db_session
+                                .run("MATCH (p3:product)-[v:view_history]->(b:buyer{id:$b1}), (p:product {id:$p1})\
+                                    WHERE timestamp()-v.timestamp < 600000 and p3.id <> p.id\
+                                    merge (p)-[:also_viewed]->(p3);",
+                                    {b1:req.session.uid, p1: pid})
+                                .then(() => {
+                                    console.log("dddddddddddddddddddddddddddd");
+                                    res.render('buyer/productdetails', {
+                                        pageTitle: 'Product Details',
+                                        path: '/buyer/productdetails',
+                                        editing: false,
+                                        product: product
+                                    });
                                 });
-                            })
+                            });
                         });
                     });
                 });
