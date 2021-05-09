@@ -164,7 +164,7 @@ exports.post_openup = (req,res,next) => {
     product = new example_prod_long();
     pid = req.body.pid;
     db_session
-        .run("MATCH (p:product{id:$pid})-[:also_bought]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+        .run("MATCH (p:product{id:$pid})-[:also_bought]-(p2:product)-[:prod_sell]->(s:seller) return distinct p2, s.name", {pid: pid})
         .then(function(result){
             also_bought = [];
             result.records.forEach(element => {
@@ -174,7 +174,7 @@ exports.post_openup = (req,res,next) => {
             });
             product.also_bought = also_bought;
         }).then(() => {db_session
-            .run("MATCH (p:product{id:$pid})-[:also_viewed]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+            .run("MATCH (p:product{id:$pid})-[:also_viewed]-(p2:product)-[:prod_sell]->(s:seller) return distinct p2, s.name", {pid: pid})
             .then(function(result){
                 also_viewed = [];
                 result.records.forEach(element => {
@@ -188,7 +188,6 @@ exports.post_openup = (req,res,next) => {
                 .then(function(result){
                     p = result.records[0].get('p').properties;
                     seller = result.records[0].get('s.name');
-                    console.log(p);
                     product.id = pid;
                     product.name = p['title'];
                     product.image = p['img'];

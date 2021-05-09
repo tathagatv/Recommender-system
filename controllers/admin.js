@@ -1,6 +1,6 @@
 const Prod = require('../models/prod');
-var sel_id_cnt=2;
-var del_id_cnt=2;
+
+const randomstring = require("randomstring");
 
 class example_base_prod {
     constructor(id, name, image, seller, cost, rating){
@@ -66,16 +66,6 @@ function prod_b(rec){
     return new buyer(rec['id'],rec['name'],rec['address'],rec['contact'],rec['mail'],rec['money']);
 }
 
-/*class example_seller {
-    constructor(name, address, contact, mail){
-        this.id = 1;
-        this.name = "Dolly_sell";
-        this.address = "Seller Shaitan Gali, Khatra Mahal, Shamshaan ke Samne";
-        this.contact = "0008881212";
-        this.mail = "seldololol@gmail.com";
-    }
-}*/
-
 class seller {
     constructor(id,name, address, contact, mail){
         this.id = id;
@@ -89,18 +79,6 @@ class seller {
 function prod_s(rec){
     return new seller(rec['id'],rec['name'],rec['address'],rec['contact'],rec['mail']);
 }
-
-/*class example_delagents {
-    constructor(name, address, contact, mail){
-        this.id = 1;
-        this.name = "Dolly_del";
-        this.address = "Dell Shaitan Gali, Khatra Mahal, Shamshaan ke Samne";
-        this.contact = "44408881212";
-        this.mail = "deldololol@gmail.com";
-        this.num_delivered = 40;
-        this.num_active = 3;
-    }
-}*/
 
 class delagents {
     constructor(id,name, contact, mail,n1,n2){
@@ -121,7 +99,7 @@ exports.get_browse = (req,res,next) => {
     db_session
     .run("match (p:product)-[:prod_sell]->(s:seller) return p,s.name limit 200")
     .then(function(result){
-        arr=[]
+        arr=[];
         for (i=0;i<result.records.length;i++){
             arr.push(prod_p(result.records[i].get('p').properties,result.records[i].get('s.name')));
         }
@@ -138,7 +116,7 @@ exports.get_buyers = (req,res,next) => {
     db_session
     .run("match (b:buyer) return b",{})
     .then(function(result){
-        arr=[]
+        arr=[];
         for (i=0;i<result.records.length;i++){
             arr.push(prod_b(result.records[i].get('b').properties));
         }
@@ -155,10 +133,10 @@ exports.get_sellers = (req,res,next) => {
     db_session
     .run("match (s:seller) return s",{})
     .then(function(result){
-        arr=[]
-        for (i=0;i<result.records.length;i++){
-            arr.push(prod_s(result.records[i].get('s').properties));
-        }
+        arr=[];
+        result.records.forEach((rec) => {
+            arr.push(prod_s(rec.get('s').properties));
+        });
         res.render('admin/sellers', {
             pageTitle: 'Sellers',
             path: '/admin/sellers',
@@ -172,7 +150,7 @@ exports.get_delagents = (req,res,next) => {
     db_session
     .run("match (d:del_personnel) return d",{})
     .then(function(result){
-        arr=[]
+        arr=[];
         for (i=0;i<result.records.length;i++){
             arr.push(prod_d(result.records[i].get('d').properties));
         }
@@ -268,7 +246,6 @@ exports.get_analytics = (req,res,next) => {
                                     var rec = result.records[i];
                                     list_of_tuples.push([rec.get('c.name'), parseInt(rec.get('cnt'))]);
                                 }
-                                console.log(list_of_tuples);
                                 res.render('admin/analytics', {
                                     pageTitle: 'Analytics',
                                     path: '/admin/analytics',
@@ -303,12 +280,10 @@ exports.post_add_seller = (req,res,next) => {
 
     db_session
         .run("merge (s:seller{id:$id,name:$na,username:$un,password:$pw,address:$ad,contact:$co,mail:$ma})",
-            {id:sel_id_cnt,na:name,un:uname,pw:psw,ad:address,co:contact,ma:mail})
+            {id: randomstring.generate(4), na: name, un: uname, pw: psw, ad: address, co: contact, ma: mail})
         .then(function(result){
-            sel_id_cnt+=1;
             res.redirect('/admin/sellers');
         });
-    return
 };
 
 exports.post_add_delagent = (req,res,next) => {
@@ -319,13 +294,11 @@ exports.post_add_delagent = (req,res,next) => {
     var mail = req.body.mail;
 
     db_session
-        .run("merge (d:del_personnel{id:$id,name:$na,username:$un,password:$pw,contact:$co,mail:$ma,delivered:$n1,active:$n2})",
-            {id:del_id_cnt,na:name,un:uname,pw:psw,co:contact,ma:mail,n1:0,n2:0})
+        .run("merge (d:del_personnel{id:$id,name:$na,username:$un,password:$pw,contact:$co,mail:$ma,delivered:0,active:0})",
+            {id:randomstring.generate(5), na:name,un:uname,pw:psw,co:contact,ma:mail})
         .then(function(result){
-            del_id_cnt+=1;
             res.redirect('/admin/delagents');
         });
-    return
 };
 
 exports.post_sort = (req,res,next) => {
@@ -342,8 +315,8 @@ exports.post_sort = (req,res,next) => {
         .then(function(result){
             result.records.forEach(element => {
                 properties = element.get('p').properties;
-                seller = element.get('sl.name');
-                arr.push(new example_base_prod(properties['id'], properties['title'], properties['img'], seller, properties['price'], properties['rating'].toFixed(2)));
+                seller1 = element.get('sl.name');
+                arr.push(new example_base_prod(properties['id'], properties['title'], properties['img'], seller1, properties['price'], properties['rating'].toFixed(2)));
             });
             res.render('admin/browse', {
                 pageTitle: 'Browse',
@@ -357,9 +330,8 @@ exports.post_sort = (req,res,next) => {
 exports.post_openup = (req,res,next) => {
     product = new example_prod_long();
     pid = req.body.pid;
-    console.log('prod id = '+ pid);
     db_session
-        .run("MATCH (p:product{id:$pid})-[:also_bought]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+        .run("MATCH (p:product{id:$pid})-[:also_bought]-(p2:product)-[:prod_sell]->(s:seller) return distinct p2, s.name", {pid: pid})
         .then(function(result){
             also_bought = [];
             result.records.forEach(element => {
@@ -369,7 +341,7 @@ exports.post_openup = (req,res,next) => {
             });
             product.also_bought = also_bought;
         }).then(() => {db_session
-            .run("MATCH (p:product{id:$pid})-[:also_viewed]-(p2:product)-[:prod_sell]->(s:seller) return p2, s.name", {pid: pid})
+            .run("MATCH (p:product{id:$pid})-[:also_viewed]-(p2:product)-[:prod_sell]->(s:seller) return distinct p2, s.name", {pid: pid})
             .then(function(result){
                 also_viewed = [];
                 result.records.forEach(element => {
@@ -383,7 +355,6 @@ exports.post_openup = (req,res,next) => {
                 .then(function(result){
                     p = result.records[0].get('p').properties;
                     seller = result.records[0].get('s.name');
-                    console.log(p);
                     product.id = pid;
                     product.name = p['title'];
                     product.image = p['img'];

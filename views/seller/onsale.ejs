@@ -39,11 +39,12 @@
                 <div class="quantity" style="font-size: 1rem;">
                     Items in stock: <%= product.quantity %>
                 </div>
-                <!-- <div class="button">
+                <div class="button">
                     <form action="/seller/openup" method="post">
+                        <input type="hidden" name="pid" value="<%= product.id %>" >
                         <input style="background-color: #FF8C00" id="<%= product.id %>" type="submit" name="openup" value="View details" >
                     </form>
-                </div> -->
+                </div>
             </div>
         </div>
     <% } %>

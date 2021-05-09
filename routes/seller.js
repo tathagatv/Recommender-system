@@ -16,5 +16,6 @@ router.post('/addnew', sellerCon.post_addnew)
 router.post('/sort', sellerCon.post_sort)
 router.post('/ship', sellerCon.post_ship)
 router.post('/openup', sellerCon.post_openup);
+router.post('/restock', sellerCon.post_restock);
 
 module.exports = router;

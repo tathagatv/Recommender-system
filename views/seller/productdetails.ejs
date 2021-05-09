@@ -38,9 +38,10 @@
                 <% } %>
             </div>
             <div class="form">
-                <form action="/seller/addnew", method="post">
+                <form action="/seller/restock", method="post">
                   <label for="addnew">Enter New Quantity:</label>
-                  <input type="number" id="addnew" name="addnew" placeholder="<%= product.quantity %>">
+                  <input type="hidden" name="pid" value="<%= product.id %>" >
+                  <input type="number" id="addnew" name="restock" placeholder="<%= product.quantity %>" required>
                   <input type="submit" value="Restock!" style="color: #FF8C00">
                 </form>
             </div>
@@ -79,6 +80,7 @@
                 </div>
                 <div class="button">
                     <form action="/openup" method="post">
+                        <input value="<%= pp.id %>" type="hidden" name="pid">
                         <input style="background-color: #FF8C00" id="<%= pp.id %>" type="submit" name="openup" value="View details" >
                     </form>
                 </div>
@@ -113,6 +115,7 @@
                 </div>
                 <div class="button">
                     <form action="/openup" method="post">
+                        <input value="<%= pp.id %>" type="hidden" name="pid">
                         <input style="background-color: #FF8C00" id="<%= pp.id %>" type="submit" name="openup" value="View details" >
                     </form>
                 </div>
