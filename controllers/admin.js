@@ -230,12 +230,24 @@ exports.get_analytics = (req,res,next) => {
       .then(function(result){
         //   result.records --> orders_per_year
         db_session
-            .run("match (b:buyer)-[:buyer_order]->(o:order) return b.name as bn, count(*) as cnt\
+            .run("match (b:buyer)-[:buyer_order]->(o:order) return b.name, count(*) as cnt\
             order by cnt desc limit 4") // for top buyers
+            .then(function(result) {
+                topbuyers = [];
+                result.records.forEach((rec) => {
+                    topbuyers.push([rec.get('b.name'), rec.get('cnt')]);
+                })
+            })
             .then(() => {
                 db_session
                     .run("match (o:order)-[:order_product]->(p:product)-[:prod_sell]->(s:seller)\
                     return s.name, count(*) as cnt order by cnt desc limit 4") // for top sellers
+                    .then(function(result) {
+                        topratedsellers = [];
+                        result.records.forEach((rec) => {
+                            topratedsellers.push([rec.get('s.name'), rec.get('cnt')]);
+                        })
+                    })
                     .then(() => {
                         db_session
                             .run("match (c:category)-[:prod_cat]-(p:product) return c.name, count(*) as cnt\
@@ -246,16 +258,26 @@ exports.get_analytics = (req,res,next) => {
                                     var rec = result.records[i];
                                     list_of_tuples.push([rec.get('c.name'), parseInt(rec.get('cnt'))]);
                                 }
-                                res.render('admin/analytics', {
-                                    pageTitle: 'Analytics',
-                                    path: '/admin/analytics',
-                                    editing: false,
-                                    list_of_tuples: list_of_tuples,
-                                    topbuyers: topbuyers,
-                                    topratedsellers: topratedsellers,
-                                    topdelagents: topdelagents,
-                                    orders_per_year: orders_per_year,
-                                });
+                            })
+                            .then(() => {
+                                db_session
+                                    .run("match (d:del_personnel) return d.name, d.delivered as cnt order by cnt desc limit 4")
+                                    .then((result) => {
+                                        topdelagents = [];
+                                        result.records.forEach((rec) => {
+                                            topdelagents.push([rec.get('d.name'), rec.get('cnt')]);
+                                        });
+                                        res.render('admin/analytics', {
+                                            pageTitle: 'Analytics',
+                                            path: '/admin/analytics',
+                                            editing: false,
+                                            list_of_tuples: list_of_tuples,
+                                            topbuyers: topbuyers,
+                                            topratedsellers: topratedsellers,
+                                            topdelagents: topdelagents,
+                                            orders_per_year: orders_per_year,
+                                        });
+                                    })
                             });
                     });
             });

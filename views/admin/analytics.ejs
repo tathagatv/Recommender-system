@@ -9,6 +9,31 @@
 <main>
     <h1>Number of products sold per category:</h1>
     <div id="piechart"></div>
+
+    <hr>
+    <h1>Some of our top buyers</h1>
+    <ol>
+    <% for (var i = 0; i < topbuyers.length; i++) { %>
+        <li><%= topbuyers[i][0] %> bought <%= topbuyers[i][1] %> items! </li>
+    <% } %>
+    </ol>
+    <hr>
+
+    <h1>Some of our top Sellers</h1>
+    <ol>
+    <% for (var i = 0; i < topratedsellers.length; i++) { %>
+        <li><%= topratedsellers[i][0] %> has supplied <%= topratedsellers[i][1] %> orders! </li>
+    <% } %>
+    </ol>
+
+    <hr>
+    <h1>Some of our Heroes</h1>
+    <ol>
+    <% for (var i = 0; i < topdelagents.length; i++) { %>
+        <li><%= topdelagents[i][0] %> has delivered <%= topdelagents[i][1] %> orders! </li>
+    <% } %>
+    </ol>
+
     <hr>
     <h1>Increase in the usage of AAmazon by our users over the years:</h1>
     <div id="linechart_material"></div>
@@ -72,29 +97,7 @@
     <img style="width: 250px; height: 200px" src="https://image.cnbcfm.com/api/v1/image/106876907-1619909921648-20210501-9XKJY-daily-covid-cases-in-india.png?v=1619909941&w=740&h=409">
 
     <hr>
-    <h1>Some of our top buyers</h1>
-    <ol>
-    <% for (var i = 0; i < topbuyers.length; i++) { %>
-        <li><%= topbuyers[i][0] %> bought <%= topbuyers[i][1] %> items! </li>
-    <% } %>
-    </ol>
-    <hr>
-
-    <h1>Some of our top Sellers</h1>
-    <ol>
-    <% for (var i = 0; i < topratedsellers.length; i++) { %>
-        <li><%= topratedsellers[i][0] %> has supplied <%= topratedsellers[i][1] %> orders! </li>
-    <% } %>
-    </ol>
-
-    <hr>
-    <h1>Some of our Heroes</h1>
-    <ol>
-    <% for (var i = 0; i < topdelagents.length; i++) { %>
-        <li><%= topdelagents[i][0] %> has delivered <%= topdelagents[i][1] %> orders! </li>
-    <% } %>
-    </ol>
-    <hr>
+    
 
 </main>
 <%- include('../includes/end.ejs') %>
