@@ -24,7 +24,6 @@ node add.js
 This project was done as part of the course project for CS387 at IIT Bombay by:
 
 [Tathagat Verma](https://github.com/tathagatv)\
-Niraj Mahajan\
+[Niraj Mahajan](https://github.com/nirajmahajan)\
 Shivam Goel\
 Bhaskar Gupta
-
